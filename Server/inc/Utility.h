@@ -7,24 +7,24 @@ class Utility
 {
 
 public:
-    static std::string showMenu(const User &user)
+    static std::string showMenu(std::string role)
     {
         std::vector<std::string> options;
-        if (user.getRole() == "Admin")
+        if (role== "Admin")
         {
             options = showAdminMenu();
         }
-        else if (user.getRole() == "Chef")
+        else if (role== "Chef")
         {
             options = showChefMenu();
         }
-        else if (user.getRole() == "Employee")
+        else if (role == "Employee")
         {
             options = showEmployeeMenu();
         }
         else
         {
-            std::cerr << "Unknown role: " << user.getRole() << std::endl;
+            std::cerr << "Unknown role: " << role<< std::endl;
         }
         std::ostringstream oss;
         for (const auto &option : options)
@@ -33,7 +33,9 @@ public:
         }
         return oss.str();
     }
-
+    static std::string menuItemString(){
+        return "Enter Item Details \n ";
+    }
 private:
     static std::vector<std::string> showAdminMenu()
     {

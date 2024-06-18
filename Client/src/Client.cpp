@@ -1,28 +1,31 @@
-#include"../inc/Client.h"
+#include "../inc/Client.h"
 
-Client::Client() : sock(0) {
-    // Creating socket file descriptor
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+Client::Client() : sock(0)
+{
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
         std::cerr << "Socket creation error" << std::endl;
     }
 }
 
-Client::~Client() {
+Client::~Client()
+{
     close(sock);
 }
 
-bool Client::connectToServer(const char *ip, int port) {
+bool Client::connectToServer(const char *ip, int port)
+{
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(port);
 
-    // Convert IPv4 and IPv6 addresses from text to binary form
-    if (inet_pton(AF_INET, ip, &serverAddr.sin_addr) <= 0) {
+    if (inet_pton(AF_INET, ip, &serverAddr.sin_addr) <= 0)
+    {
         std::cerr << "Invalid address / Address not supported" << std::endl;
         return false;
     }
 
-    // Connect to the server
-    if (connect(sock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
+    if (connect(sock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
+    {
         std::cerr << "Connection Failed" << std::endl;
         return false;
     }
@@ -31,56 +34,62 @@ bool Client::connectToServer(const char *ip, int port) {
     return true;
 }
 
-bool Client::authenticate(const std::string &username, const std::string &password) {
+bool Client::authenticate(const std::string &username, const std::string &password)
+{
     char buffer[BUFFER_SIZE] = {0};
 
-    // Send username and password to server for authentication
-    send(sock, username.c_str(), username.length(), 0);
-    sleep(1); // Give server time to process the first part
-    send(sock, password.c_str(), password.length(), 0);
+    sendOption(username);
+    sleep(1);
+    sendOption(password);
+    readResponse(buffer);
 
-    // Read response from server
-    int valread = read(sock, buffer, BUFFER_SIZE);
-    if (valread > 0) {
-        std::cout << "Message from server: " << buffer << std::endl;
-    } else {
-        std::cerr << "Failed to receive response from server" << std::endl;
+    if (strcmp(buffer, "Authentication failed") == 0) {
+        std::cerr << "Authentication failed" << std::endl;
         return false;
     }
 
-    // Return true if authentication successful, otherwise false
-    return strstr(buffer, "Authentication successful") != nullptr;
-}
-
-bool Client::sendOption(int option) {
-    char buffer[BUFFER_SIZE] = {0};
-
-    // Send option to server
-    send(sock, std::to_string(option).c_str(), std::to_string(option).length(), 0);
-
-    // Read response from server
-    int valread = read(sock, buffer, BUFFER_SIZE);
-    if (valread > 0) {
-        std::cout << "Server response: " << buffer << std::endl;
-    } else {
-        std::cerr << "Failed to receive response from server" << std::endl;
-    }
-
+    // Authentication succeeded
     return true;
 }
 
-void Client::closeConnection() {
-    close(sock);
+bool Client::sendOption(std::string option)
+{
+    char buffer[BUFFER_SIZE] = {0};
+
+    if (send(sock, option.c_str(), option.length(), 0) == -1)
+    {
+        std::cerr << "Failed to send data to server" << std::endl;
+        return false;
+    }
+    std::cout << "sent client"<<std::endl;
+    return true;
 }
 
-// Example usage of Client class
-int main() {
+void Client::closeConnection()
+{
+    close(sock);
+}
+bool Client::readResponse(char* buffer)
+{
+    
+        int valread = read(sock,buffer, BUFFER_SIZE);
+        if (valread <= 0)
+            return false;
+        std::cout<<"Server Response:\n" <<buffer;
+        memset(buffer, 0, BUFFER_SIZE);
+       
+        return true;
+    
+}
+int main()
+{
     const char *serverIP = "127.0.0.1";
     int serverPort = 8080;
 
     Client client;
 
-    if (!client.connectToServer(serverIP, serverPort)) {
+    if (!client.connectToServer(serverIP, serverPort))
+    {
         std::cerr << "Failed to connect to server" << std::endl;
         return -1;
     }
@@ -91,20 +100,90 @@ int main() {
     std::cout << "Enter password: ";
     std::cin >> password;
 
-    if (client.authenticate(username, password)) {
+    if (client.authenticate(username, password))
+    {
         std::cout << "Authentication successful" << std::endl;
-        
-        // Simulate admin operations
-        int option;
-        std::cout << "Enter option (1-4): ";
-        std::cin >> option;
 
-        if (option >= 1 && option <= 4) {
-            client.sendOption(option);
-        } else {
+        std::string optionstr;
+        std::cout << "Enter option (1-4): ";
+        std::cin >> optionstr;
+        client.sendOption(optionstr);
+        int option = std::stoi(optionstr);
+        if (option >= 1 && option <= 4)
+        {
+
+            if (option == 1)
+            {
+                std::string name, price, available, mealTypeStr;
+                char buffer[BUFFER_SIZE] = {0};
+                client.readResponse(buffer);
+                std::cout << "Item name: ";
+                std::cin >> name;
+                client.sendOption(name);
+                std::cout << "Price: ";
+                std::cin >> price;
+                client.sendOption(price);
+                std::cout << "Availability (Yes/No): ";
+                std::cin >> available;
+                client.sendOption(available);
+                std::cout << "Meal Type (Breakfast/Lunch/Dinner): ";
+                std::cin >> mealTypeStr;
+                client.sendOption(mealTypeStr);
+                client.readResponse(buffer);
+            }
+            else if(option ==2){
+                char buffer[BUFFER_SIZE] = {0};
+
+                client.readResponse(buffer);
+                std::string mealStr; std::cin>>mealStr;
+                client.sendOption(mealStr);
+
+                client.readResponse(buffer);
+               
+                client.readResponse(buffer);
+                std::string id; std::cin>>id;
+                client.sendOption(id);
+
+                client.readResponse(buffer);
+                std::string column; std::cin>>column;
+                client.sendOption(column);
+
+                client.readResponse(buffer);
+                std::string value; std::cin>>value;
+                client.sendOption(value);
+
+
+            }
+            else if(option==3){
+                char buffer[BUFFER_SIZE]={0};
+                client.readResponse(buffer);
+                std::string mealType;
+                std::cin >> mealType;
+                
+                client.sendOption(mealType);
+                client.readResponse(buffer);
+                client.readResponse(buffer);
+                std::string id; std::cin>>id;
+                client.sendOption(id);
+            }
+            else if (option == 4)
+            {
+                char buffer[BUFFER_SIZE]={0};
+                client.readResponse(buffer);
+                std::string mealType;
+                std::cin >> mealType;
+                
+                client.sendOption(mealType);
+                client.readResponse(buffer);
+            }
+        }
+        else
+        {
             std::cout << "Invalid option" << std::endl;
         }
-    } else {
+    }
+    else
+    {
         std::cout << "Authentication failed" << std::endl;
     }
 
@@ -112,5 +191,3 @@ int main() {
 
     return 0;
 }
-
-

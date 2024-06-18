@@ -3,7 +3,8 @@
 
     std::string Admin::getRole() const  { return "Admin"; }
 
-    void Admin::addMenuItem(const MenuItem& item){}
-    void Admin::updateMenuItem(const MenuItem& item){}
-    void Admin::deleteItem(int itemId){}
+    void Admin::addMenuItem(const MenuItem& item){menu.addMenuItem(item);}
+    void Admin::updateMenuItem(int itemId,std::string columnToUpdate,std::string value){menu.updateMenuItem( itemId, columnToUpdate, value);}
+    void Admin::deleteItem(int itemId){menu.deleteItem(itemId);}
+    std::string Admin::getAllMenuItem(){ return menu.getAllMenuItem();}
 

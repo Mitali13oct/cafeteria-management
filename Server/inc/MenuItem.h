@@ -1,24 +1,25 @@
 #pragma once
 #include <string>
-
+#include"../inc/Mealtype.h"
 class MenuItem {
 private:
-    int id;
     std::string name;
-    std::string description;
     double price;
-    double rating;
-    std::string comment;
+   MealType mealType;
+   bool isAvailable;
+   int id;
 
 public:
-    MenuItem(int id, const std::string& name, const std::string& description, double price, double rating,std::string comment)
-        : id(id), name(name), description(description), price(price),rating(rating),comment(comment) {}
+    MenuItem( const std::string& name, double price,MealType type, bool availability)
+        :  id(-1),name(name), price(price) ,mealType(type), isAvailable(availability){}
+    MenuItem( int id,const std::string& name, double price,MealType type, bool availability)
+        :  id(id),name(name), price(price) ,mealType(type), isAvailable(availability){}
 
-    int getId()const ;
     std::string getName() const ;
-    std::string getDescription() const ;
+    bool getAvailability() const ;
     double getPrice() const;
-
+    int getId()const;
+    MealType getMealType() const;
     void setName(const std::string& name);
     void setDescription(const std::string& description) ;
     void setPrice(double price);

@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-
+#include<sstream>
 #define BUFFER_SIZE 1024
 
 class Client {
@@ -18,6 +18,8 @@ public:
     ~Client();
     bool connectToServer(const char *ip, int port);
     bool authenticate(const std::string &username, const std::string &password);
-    bool sendOption(int option);
+bool readResponse(char*);
+
+bool sendOption(std::string option);
     void closeConnection();
 };
