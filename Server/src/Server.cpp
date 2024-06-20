@@ -1,5 +1,5 @@
 
-#include "../inc/Server.h"
+#include "Server/inc/Server.h"
 
 Server::Server(int port)
 {
@@ -109,7 +109,7 @@ std::string Server::processUserOption(User *user, int option, int socket, char *
     if (user->getRole() == "Admin")
     {
         Admin *admin = dynamic_cast<Admin *>(user);
-
+       
         std::cout << "Admin" << std::endl;
         if (option == 1)
         {
