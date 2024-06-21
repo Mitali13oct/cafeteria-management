@@ -1,6 +1,5 @@
-#pragma once
 
-#include "Server/inc/FeedbackService/FeedbackService.h"
+#include "FeedbackService.h"
 
 void FeedbackService::addFeedback(const Feedback &Feedback) { repository.addFeedback(Feedback); }
 std::vector<Feedback> FeedbackService::getAllFeedback(int itemid)

@@ -1,10 +1,10 @@
-#include "Server/inc/MenuService/MenuService.h"
+#include "MenuService.h"
 bool MenuService::addMenuItem(const MenuItem &item)
 {
 
     menuType->addMenuItem(item);
     NotificationRepository notificationrepo;
-    NotificationService notificationService(notificationrepo);
+    NotificationService notificationService(&notificationrepo);
     auto now = std::chrono::system_clock::now();
 
     // Convert to time_t (since epoch)
@@ -19,7 +19,7 @@ bool MenuService::addMenuItem(const MenuItem &item)
 
     std::string addNotification = "Added Item: "+item.getName();
     std::string time =ss.str();
-    Notification notificationObj(NotificationType::MenuUpdate,addNotification,time);
+    Notification notificationObj(NotificationType::ItemAdded,addNotification,time);
    std::cout<<"menuservice";
     notificationService.addNotification(notificationObj);
 

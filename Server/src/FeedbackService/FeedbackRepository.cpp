@@ -1,12 +1,12 @@
 
-#include "Server/inc/FeedbackService/FeedbackRepository.h"
+#include "FeedbackRepository.h"
 
 void FeedbackRepository::addFeedback(const Feedback &feedback) {
     std::map<std::string, std::string> data = {
         {"rating", std::to_string(feedback.getRating())},
         {"comment", feedback.getComment()},
         {"feedbackDate", feedback.getDate()},
-        {"MenuID", std::to_string(feedback.getItemId())}
+        {"itemId", std::to_string(feedback.getItemId())}
     };
     database.insert("Feedback", data);
 }
@@ -15,7 +15,7 @@ void FeedbackRepository::addFeedback(const Feedback &feedback) {
 
 std::vector<Feedback> FeedbackRepository::getAllFeedback(int itemid) const {
     std::map<std::string, std::string> filter = {
-        {"id", std::to_string(itemid)}};
+        {"itemId", std::to_string(itemid)}};
     sql::ResultSet *res = database.selectAll("Feedback",filter);
     std::vector<Feedback> feedbacks;
 

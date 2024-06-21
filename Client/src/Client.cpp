@@ -43,12 +43,12 @@ bool Client::authenticate(const std::string &username, const std::string &passwo
     sendOption(password);
     readResponse(buffer);
 
-    if (strcmp(buffer, "Authentication failed") == 0) {
-        std::cerr << "Authentication failed" << std::endl;
+    if (strcmp(buffer, "Authentication Successful") == 0)
+    {
+        std::cout << "48\n";
         return false;
     }
 
-    // Authentication succeeded
     return true;
 }
 
@@ -61,7 +61,7 @@ bool Client::sendOption(std::string option)
         std::cerr << "Failed to send data to server" << std::endl;
         return false;
     }
-    std::cout << "sent client"<<std::endl;
+    std::cout << "sent client" << std::endl;
     return true;
 }
 
@@ -69,17 +69,62 @@ void Client::closeConnection()
 {
     close(sock);
 }
-bool Client::readResponse(char* buffer)
+bool Client::readResponse(char *buffer)
 {
+
+    int valread = read(sock, buffer, BUFFER_SIZE);
+    if (valread <= 0)
+    {
+            std::cout<<"120"<<"\n";
+
+        return false;
+    }
+    std::cout << "Server Response:\n"
+              << buffer;
+    memset(buffer, 0, BUFFER_SIZE);
+
+    return true;
+}
+std::string Client::getRoleFromServer()
+{
+    char buffer[BUFFER_SIZE];
+    read(sock, buffer, BUFFER_SIZE);
+    return std::string(buffer);
+}
+// void handleAdminOptions(Client &client);
+// void handleChefOptions(Client &client);
+void handleEmployeeOptions(Client &client)
+{
+    std::string optionstr;
+
+    std::cout << "Enter option (1-3): ";
+    std::cin >> optionstr;
+    client.sendOption(optionstr);
+    int option = std::stoi(optionstr);
+
+    if (option == 2)
+    {
+        char buffer[BUFFER_SIZE] = {0};
+        
+        // client.readResponse(buffer);
+
+        client.readResponse(buffer);
+        std::string mealtype;
+        std::cin >> mealtype;
+        client.sendOption(mealtype);
+
+        client.readResponse(buffer);
+    }
+    if (option == 3)
+    {
+        char buffer[BUFFER_SIZE] = {0};
+        client.readResponse(buffer);
+        std::string typeOption;
+        std::cin >> typeOption;
     
-        int valread = read(sock,buffer, BUFFER_SIZE);
-        if (valread <= 0)
-            return false;
-        std::cout<<"Server Response:\n" <<buffer;
-        memset(buffer, 0, BUFFER_SIZE);
-       
-        return true;
-    
+        client.sendOption(typeOption);
+        client.readResponse(buffer);
+    }
 }
 int main()
 {
@@ -102,80 +147,100 @@ int main()
 
     if (client.authenticate(username, password))
     {
-        std::cout << "Authentication successful" << std::endl;
+        std::cout << "130\n";
+        std::string role = client.getRoleFromServer();
+        std::cout << "131\n";
+        char buffer[BUFFER_SIZE] = {0};
+        std::cout << "132\n";
+        // client.readResponse(buffer);
 
-        std::string optionstr;
-        std::cout << "Enter option (1-4): ";
-        std::cin >> optionstr;
-        client.sendOption(optionstr);
-        int option = std::stoi(optionstr);
-        if (option >= 1 && option <= 4)
+        std::cout << "Role:" << role << "<-\n";
+        if (role == "Admin\n")
         {
-
-            if (option == 1)
+            std::cout << Utility::showMenu(role);
+            std::string optionstr;
+            std::cout << "Enter option (1-4): ";
+            std::cin >> optionstr;
+            client.sendOption(optionstr);
+            int option = std::stoi(optionstr);
+            if (option >= 1 && option <= 4)
             {
-                std::string name, price, available, mealTypeStr;
-                char buffer[BUFFER_SIZE] = {0};
-                client.readResponse(buffer);
-                std::cout << "Item name: ";
-                std::cin >> name;
-                client.sendOption(name);
-                std::cout << "Price: ";
-                std::cin >> price;
-                client.sendOption(price);
-                std::cout << "Availability (Yes/No): ";
-                std::cin >> available;
-                client.sendOption(available);
-                std::cout << "Meal Type (Breakfast/Lunch/Dinner): ";
-                std::cin >> mealTypeStr;
-                client.sendOption(mealTypeStr);
-                client.readResponse(buffer);
+
+                if (option == 1)
+                {
+                    std::string name, price, available, mealTypeStr;
+                    char buffer[BUFFER_SIZE] = {0};
+                    client.readResponse(buffer);
+                    std::cout << "Item name: ";
+                    std::cin >> name;
+                    client.sendOption(name);
+                    std::cout << "Price: ";
+                    std::cin >> price;
+                    client.sendOption(price);
+                    std::cout << "Availability (Yes/No): ";
+                    std::cin >> available;
+                    client.sendOption(available);
+                    std::cout << "Meal Type (Breakfast/Lunch/Dinner): ";
+                    std::cin >> mealTypeStr;
+                    client.sendOption(mealTypeStr);
+                    client.readResponse(buffer);
+                }
+                else if (option == 2)
+                {
+                    char buffer[BUFFER_SIZE] = {0};
+
+                    client.readResponse(buffer);
+                    std::string mealStr;
+                    std::cin >> mealStr;
+                    client.sendOption(mealStr);
+
+                    client.readResponse(buffer);
+
+                    client.readResponse(buffer);
+                    std::string id;
+                    std::cin >> id;
+                    client.sendOption(id);
+
+                    client.readResponse(buffer);
+                    std::string column;
+                    std::cin >> column;
+                    client.sendOption(column);
+
+                    client.readResponse(buffer);
+                    std::string value;
+                    std::cin >> value;
+                    client.sendOption(value);
+                }
+                else if (option == 3)
+                {
+                    char buffer[BUFFER_SIZE] = {0};
+                    client.readResponse(buffer);
+                    std::string mealType;
+                    std::cin >> mealType;
+
+                    client.sendOption(mealType);
+                    client.readResponse(buffer);
+                    client.readResponse(buffer);
+                    std::string id;
+                    std::cin >> id;
+                    client.sendOption(id);
+                }
+                else if (option == 4)
+                {
+                    char buffer[BUFFER_SIZE] = {0};
+                    client.readResponse(buffer);
+                    std::string mealType;
+                    std::cin >> mealType;
+
+                    client.sendOption(mealType);
+                    client.readResponse(buffer);
+                }
             }
-            else if(option ==2){
-                char buffer[BUFFER_SIZE] = {0};
-
-                client.readResponse(buffer);
-                std::string mealStr; std::cin>>mealStr;
-                client.sendOption(mealStr);
-
-                client.readResponse(buffer);
-               
-                client.readResponse(buffer);
-                std::string id; std::cin>>id;
-                client.sendOption(id);
-
-                client.readResponse(buffer);
-                std::string column; std::cin>>column;
-                client.sendOption(column);
-
-                client.readResponse(buffer);
-                std::string value; std::cin>>value;
-                client.sendOption(value);
-
-
-            }
-            else if(option==3){
-                char buffer[BUFFER_SIZE]={0};
-                client.readResponse(buffer);
-                std::string mealType;
-                std::cin >> mealType;
-                
-                client.sendOption(mealType);
-                client.readResponse(buffer);
-                client.readResponse(buffer);
-                std::string id; std::cin>>id;
-                client.sendOption(id);
-            }
-            else if (option == 4)
-            {
-                char buffer[BUFFER_SIZE]={0};
-                client.readResponse(buffer);
-                std::string mealType;
-                std::cin >> mealType;
-                
-                client.sendOption(mealType);
-                client.readResponse(buffer);
-            }
+        }
+        else if (role == "Employee\n")
+        {
+            Utility::showMenu(role);
+            handleEmployeeOptions(client);
         }
         else
         {

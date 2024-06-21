@@ -1,4 +1,4 @@
-    #include"Server/inc/NotificationService/Notification.h"
+    #include"Notification.h"
     
     int Notification::getNotificationId() const {
         return id;
@@ -11,7 +11,7 @@
     std::string Notification::getTypeAsString() const {
         switch (type) {
             case NotificationType::Recommendation: return "Recommendation";
-            case NotificationType::MenuUpdate: return "MenuUpdate";
+            case NotificationType::ItemAdded: return "ItemAdded";
             case NotificationType::AvailabilityChange: return "AvailabilityChange";
             default: return "Unknown";
         }
@@ -25,4 +25,4 @@
         return dateTime;
     }
  
-
+    

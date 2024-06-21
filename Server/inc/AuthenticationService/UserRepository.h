@@ -5,11 +5,11 @@
 #include <cppconn/resultset.h>
 #include <cppconn/exception.h>
 #include <cppconn/prepared_statement.h>
-#include "Server/inc/AuthenticationService/User.h"
-#include "Server/inc/AuthenticationService/Admin.h"
-#include "Server/inc/AuthenticationService/Chef.h"
-#include "Server/inc/AuthenticationService/Employee.h"
-#include"Server/inc/DbOperation/DbOperation.h"
+#include "User.h"
+#include "Admin.h"
+#include "Chef.h"
+#include "Employee.h"
+#include "DbOperation.h"
 
 // class UserRepository {
 // private:
@@ -115,19 +115,19 @@
 //     }
 // }
 
-
-class UserRepository {
+class UserRepository
+{
 public:
     UserRepository()
         : dbRepo("RecommendationEngine", "mitalijain", "Mishu@777") {}
 
-    void saveUser(const User& user) ;
+    void saveUser(const User &user);
 
-    bool authenticateUser(const std::string& username, const std::string& password) ;
+    bool authenticateUser(const std::string &username, const std::string &password);
 
-    std::string getUserRole(const std::string& username);
-User* getUserByUsername(const std::string& username) ;
+    std::string getUserRole(const std::string &username);
+    User *getUserByUsername(const std::string &username);
+
 private:
     DatabaseRepository dbRepo;
 };
-

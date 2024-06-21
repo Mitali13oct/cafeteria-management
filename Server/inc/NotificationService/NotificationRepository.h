@@ -1,6 +1,6 @@
 #pragma once
 #include "Notification.h"
-#include "Server/inc/DbOperation/DbOperation.h"
+#include "DbOperation.h"
 class NotificationRepository
 {
 private:
@@ -14,5 +14,5 @@ public:
 
     void addNotification(const Notification &notification);
     void deleteNotification(int notificationId);
-    std::vector<Notification> getAllNotification() const;
+    std::vector<Notification> getAllNotification(std::string ) const;
 };

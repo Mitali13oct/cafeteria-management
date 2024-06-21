@@ -1,4 +1,4 @@
-#include"Server/inc/RecommendationService/Recommendation.h"
+#include"Recommendation.h"
 
 Recommendation::Recommendation(int recommendationId, MealType type, const std::string& recommendationDate,
                                int totalRating,int itemid)

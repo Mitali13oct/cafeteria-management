@@ -5,10 +5,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include<sstream>
+#include <sstream>
+#include"Utility.h"
 #define BUFFER_SIZE 1024
 
-class Client {
+class Client
+{
 private:
     int sock;
     struct sockaddr_in serverAddr;
@@ -18,8 +20,8 @@ public:
     ~Client();
     bool connectToServer(const char *ip, int port);
     bool authenticate(const std::string &username, const std::string &password);
-bool readResponse(char*);
-
-bool sendOption(std::string option);
+    bool readResponse(char *);
+    std::string getRoleFromServer();
+    bool sendOption(std::string option);
     void closeConnection();
 };

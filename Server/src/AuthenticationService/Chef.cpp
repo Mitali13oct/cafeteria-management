@@ -1,4 +1,4 @@
-#include "Server/inc/AuthenticationService/Chef.h"
+#include "Chef.h"
 
 std::string Chef::getRole() const { return "Chef"; }
 

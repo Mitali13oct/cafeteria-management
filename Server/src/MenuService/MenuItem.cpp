@@ -1,4 +1,4 @@
-#include"Server/inc/MenuService/MenuItem.h"
+#include"MenuItem.h"
     std::string MenuItem::getName() const { return name; }
     bool MenuItem::getAvailability() const { return isAvailable; }
     double MenuItem::getPrice() const { return price; }

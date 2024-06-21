@@ -1,4 +1,5 @@
-#include"Server/inc/RecommendationService/SentimentAnalyzer.h"
+#include "SentimentAnalyzer.h"
+#include <iostream>
 
 
 
@@ -15,5 +16,6 @@
                 sentimentScore--;
             }
         }
-        return sentimentScore;
-    }
+
+    return sentimentScore;
+}

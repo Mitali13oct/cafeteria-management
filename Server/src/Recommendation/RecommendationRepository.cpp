@@ -1,4 +1,4 @@
-#include"Server/inc/RecommendationService/RecommendationRepository.h"
+#include"RecommendationRepository.h"
 
 RecommendationRepository::RecommendationRepository()
     : database("RecommendationEngine", "mitalijain", "Mishu@777") {}
@@ -23,10 +23,15 @@ void RecommendationRepository::deleteRecommendation(int recommendationId) {
     database.remove("Recommendation", filter);
 }
 
-std::vector<Recommendation> RecommendationRepository::getAllRecommendations() const {
-    sql::ResultSet *res = database.selectAll("Recommendation");
+std::vector<Recommendation> RecommendationRepository::getAllRecommendations(std::string mealType) const {
+   std::map<std::string, std::string> filter = {
+        {"type", mealType}
+    };
+    std::map<std::string, std::string> order = {
+        {"totalRating", "ASC"}
+    };
+    sql::ResultSet *res = database.selectAll("Recommendation",filter,order,"=","ItemID");
     std::vector<Recommendation> recommendations;
-
     while (res->next()) {
         int recommendationId = res->getInt("recommendationId");
         std::string typeStr = res->getString("type");

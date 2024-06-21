@@ -1,6 +1,6 @@
 #pragma once
 #include "Feedback.h"
-#include "Server/inc/DbOperation/DbOperation.h"
+#include "DbOperation.h"
 #include <vector>
 
 class FeedbackRepository {

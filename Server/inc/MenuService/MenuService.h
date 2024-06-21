@@ -3,7 +3,7 @@
 #include "MenuRepository.h"
 #include "Mealtype.h"
 #include <vector>
-#include"Server/inc/NotificationService/NotificationService.h"
+#include"NotificationService.h"
 class MenuService
 {
     MenuRepository *menuType;

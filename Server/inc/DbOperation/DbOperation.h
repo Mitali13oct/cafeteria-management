@@ -22,7 +22,7 @@ public:
 
     void update(const std::string &entityName, const std::map<std::string, std::string> &data, const std::map<std::string, std::string> &filter);
 
-    sql::ResultSet *selectAll(const std::string &entityName, const std::map<std::string, std::string> &filter = {}, const std::map<std::string, std::string> &orderBy = {}, const std::string &condition = "=") const;
+    sql::ResultSet *selectAll(const std::string &entityName, const std::map<std::string, std::string> &filter = {}, const std::map<std::string, std::string> &orderBy = {}, const std::string &condition = "=", const std::string& groupBy="") const;
 
     sql::ResultSet *selectOne(const std::string &entityName, const std::map<std::string, std::string> &filter);
 

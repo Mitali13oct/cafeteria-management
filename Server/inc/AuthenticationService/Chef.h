@@ -1,6 +1,6 @@
 #pragma once
 #include "User.h"
-#include "Server/inc/MenuService/MenuRepository.h"
+#include "MenuRepository.h"
 
 class Chef : public User
 {

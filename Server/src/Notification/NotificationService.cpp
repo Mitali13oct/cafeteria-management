@@ -1,10 +1,25 @@
 
-#include"Server/inc/NotificationService/NotificationService.h"
+#include"NotificationService.h"
 
 
-    void NotificationService::addNotification(const Notification& notification){repository.addNotification(notification);}
-    void NotificationService::deleteNotification(int notificationId){repository.deleteNotification(notificationId);}
-    std::string NotificationService::getAllNotification(){std::vector<Notification> notifications = repository.getAllNotification();
+    void NotificationService::addNotification(const Notification& notification){repository->addNotification(notification);}
+    void NotificationService::deleteNotification(int notificationId){repository->deleteNotification(notificationId);}
+    std::string NotificationService::getAllNotification(NotificationType type){
+        std::string notificationTypeStr;
+            if (type == NotificationType::Recommendation)
+            {
+                notificationTypeStr = "Recommendation";
+            }
+            else if (type == NotificationType::ItemAdded)
+            {
+                notificationTypeStr = "ItemAdded";
+            }
+            else if (type == NotificationType::AvailabilityChange)
+            {
+                notificationTypeStr = "AvailabilityChange";
+            }
+            std::cout<< notificationTypeStr <<"\n";
+        std::vector<Notification> notifications = repository->getAllNotification(notificationTypeStr);
     std::string result;
 
     for (const auto& notification : notifications) {
@@ -15,3 +30,11 @@
     }
 
     return result;}
+    std::string  NotificationService:: convertTypeToString(NotificationType type){
+        switch (type) {
+            case NotificationType::Recommendation: return "Recommendation";
+            case NotificationType::ItemAdded: return "ItemAdded";
+            case NotificationType::AvailabilityChange: return "AvailabilityChange";
+            default: return "Unknown";
+        }
+    }

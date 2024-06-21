@@ -1,5 +1,5 @@
 // BreakfastRepository.cpp
-#include "Server/inc/MenuService/BreakfastRepository.h"
+#include "BreakfastRepository.h"
 MealType BreakfastRepository::getMealType(){
     return MealType::Breakfast;
 }

@@ -7,7 +7,7 @@
 enum class NotificationType
 {
     Recommendation,
-    MenuUpdate,
+    ItemAdded,
     AvailabilityChange
 };
 

@@ -5,10 +5,12 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "Server/inc/AuthenticationService/UserRepository.h"
-#include "../inc/Utility.h"
-#include "Server/inc/MenuService/BreakfastRepository.h"
-#include"Server/inc/NotificationService/NotificationService.h"
+#include "UserRepository.h"
+#include "Utility.h"
+#include "BreakfastRepository.h"
+#include "NotificationService.h"
+#include"RecommendationService.h"
+#include"WordLoader.h"
 #define BUFFER_SIZE 1024
 class Server
 {
@@ -37,9 +39,8 @@ public:
         return true;
     }
     std::string processViewItemsOption(Admin *admin, int socket, char *buffer);
-    bool addItem(int socket, char *buffer, Admin *admin);
     std::string processUserOption(User *user, int option, int socket, char *buffer);
     void *handleAuthFailure(int socket);
-
+    void getNotification(int socket, char *buffer);
     void closeSocket(int new_socket);
 };

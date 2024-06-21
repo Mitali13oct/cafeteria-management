@@ -1,6 +1,6 @@
 #pragma Once
-#include "Server/inc/AuthenticationService/AuthenticationService.h"
-#include "Server/inc/AuthenticationService/UserRepository.h"
+#include "AuthenticationService.h"
+#include "UserRepository.h"
 class AuthenticationServiceImpl : public AuthenticationService
 {
 private:

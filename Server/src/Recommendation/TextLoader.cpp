@@ -1,5 +1,5 @@
 
-#include"Server/inc/RecommendationService/TextLoader.h"
+#include"TextLoader.h"
 
 
     std::string TextProcessor::toLower(const std::string& str) {

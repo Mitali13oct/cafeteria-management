@@ -1,5 +1,5 @@
 #pragma once
-#include "Server/inc/MenuService/Mealtype.h"
+#include "Mealtype.h"
 #include <string>
 class Recommendation {
 private:

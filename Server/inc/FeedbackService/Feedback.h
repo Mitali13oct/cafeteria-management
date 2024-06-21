@@ -13,23 +13,13 @@ public:
     Feedback(int feedbackId,double rating, std::string comment,std::string date,int itemId) : feedbackId(feedbackId),rating(rating),comment(comment),date(date),itemId(itemId){}
     ~Feedback(){}
 
-    int getFeedbackId() const {
-        return feedbackId;
-    }
+    int getFeedbackId() const ;
 
-    double getRating() const {
-        return rating;
-    }
+    double getRating() const ;
 
-    std::string getComment() const {
-        return comment;
-    }
+    std::string getComment() const ;
 
-    std::string getDate() const {
-        return date;
-    }
+    std::string getDate() const ;
 
-    int getItemId() const {
-        return itemId;
-    }
+    int getItemId() const;
 };

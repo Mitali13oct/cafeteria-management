@@ -1,8 +1,8 @@
 
 #pragma once
-#include "Server/inc/FeedbackService/FeedbackService.h"
+#include "FeedbackService.h"
 #include "SentimentAnalyzer.h"
-#include"Server/inc/MenuService/MenuRepository.h"
+#include"MenuRepository.h"
 #include <vector>
 #include"RecommendationRepository.h"
 #include<unordered_map>
@@ -12,12 +12,13 @@ class RecommendationService {
 private:
    FeedbackService& feedbackService;
     SentimentAnalyzer& sentimentAnalyzer;
-    RecommendationRepository recommendationRepository;
+    RecommendationRepository* recommendationRepository;
 
 public:
-    RecommendationService(FeedbackService &feedbackService, SentimentAnalyzer &sentimentAnalyzer);
+    RecommendationService(RecommendationRepository*,FeedbackService &feedbackService, SentimentAnalyzer &sentimentAnalyzer);
     ~RecommendationService();
 
     void generateRecommendations( MenuRepository* );
+    std::string getAllRecommendations(MealType mealtype);
 };
 

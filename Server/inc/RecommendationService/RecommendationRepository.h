@@ -1,6 +1,6 @@
 #pragma once
 #include "Recommendation.h"
-#include "Server/inc/DbOperation/DbOperation.h"
+#include "DbOperation.h"
 #include <vector>
 
 class RecommendationRepository {
@@ -13,6 +13,6 @@ public:
 
     void addRecommendation(const Recommendation &recommendation);
     void deleteRecommendation(int recommendationId);
-    std::vector<Recommendation> getAllRecommendations() const;
+    std::vector<Recommendation> getAllRecommendations(std::string) const;
     // Recommendation getRecommendationById(int recommendationId) const;
 };

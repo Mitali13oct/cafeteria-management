@@ -88,7 +88,7 @@
 //     }
 // }
 
-#include "Server/inc/AuthenticationService/UserRepository.h"
+#include "UserRepository.h"
 
     std::string UserRepository::getUserRole(const std::string& username) {
     std::map<std::string, std::string> filter = {
@@ -142,7 +142,6 @@
                 user = new Employee(id, user_username, password);
             } else {
                 delete res;
-                throw std::runtime_error("Unknown role");
             }
 
             delete res;
