@@ -52,7 +52,7 @@ private:
 
     static std::vector<std::string> showEmployeeMenu()
     {
-        return {"1. Choose Menu Item\n2. Provide Feedback\n3. View Notifications\n"};
+        return {"1. Choose Menu Item\n2. Get Recommendation \n3. View Notifications\n4. Provide Feedback"};
 
         // Additional employee options here
     }

@@ -127,6 +127,7 @@ public:
 
     std::string getUserRole(const std::string &username);
     User *getUserByUsername(const std::string &username);
+    
 
 private:
     DatabaseRepository dbRepo;

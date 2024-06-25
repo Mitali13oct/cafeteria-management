@@ -70,7 +70,7 @@ void RecommendationService::generateRecommendations(MenuRepository *type)
         Recommendation recommendation(
             0,
             type->getMealType(),
-            getCurrentDate(),
+            Utility::getCurrentDate(),
             recommendationScore,
             itemId);
 
@@ -99,13 +99,26 @@ std::string RecommendationService::getAllRecommendations(MealType mealtype)
     {
         mealTypeStr = "Dinner";
     }
-    std::vector<Recommendation> recommendations = recommendationRepository->getAllRecommendations(mealTypeStr);
-    std::string result;
-
-    for (const auto &recommendation : recommendations)
+    std::vector<Recommendation> existingRecommendations = recommendationRepository->getAllRecommendations(mealTypeStr);
+    std::vector<int> itemIds;
+    for (const auto &recommendation : existingRecommendations)
     {
-        result += "ID: " + std::to_string(recommendation.getRecommendationId()) + ", " + "Rating: " + std::to_string(recommendation.getTotalRating()) + ", " + "Meal Type: " +mealTypeStr + ", " + "Date: " + recommendation.getRecommendationDate() + ", " + "ItemId: " + std::to_string(recommendation.getItemid()) + "\n";
+        itemIds.push_back(recommendation.getItemid());
     }
 
+    // Fetch item names for the item IDs
+    std::map<int, std::string> itemNames = recommendationRepository->getItemNames(itemIds);
+    std::string result;
+    for (const auto &recommendation : existingRecommendations)
+    {
+         std::string itemName = itemNames[recommendation.getItemid()];  // Get the item name for the item ID
+
+        result += "ID: " + std::to_string(recommendation.getRecommendationId()) + ", " +
+                  "Rating: " + std::to_string(recommendation.getTotalRating()) + ", " +
+                  "Meal Type: " + mealTypeStr + ", " +
+                  "Date: " + recommendation.getRecommendationDate() + ", " +
+                //   "ItemId: " + std::to_string(recommendation.getItemid()) + ", " +
+                  "ItemName: " + itemName + "\n";  // Include item name
+    }
     return result;
 }

@@ -63,8 +63,12 @@ sql::ResultSet *DatabaseRepository::selectAll(const std::string &entityName, con
         query += " WHERE ";
         for (const auto &pair : filter)
         {
-            query += pair.first + " " + condition + " ? AND ";
-            queryParams.push_back(pair.second);
+           if (condition == "IN") {
+                query += pair.first + " " + condition + " " + pair.second + " AND ";
+            } else {
+                query += pair.first + " " + condition + " ? AND ";
+                queryParams.push_back(pair.second);
+            }
         }
         query = query.substr(0, query.size() - 5);
     }

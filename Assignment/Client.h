@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <sstream>
 #include "Utility.h"
-#include <map>
 #define BUFFER_SIZE 1024
 
 class Client
@@ -20,11 +19,10 @@ public:
     Client();
     ~Client();
     bool connectToServer(const char *ip, int port);
-    bool authenticate(std::map<std::string, std::string>);
-    bool sendMulitpleDetails(std::map<std::string, std::string> details);
-
+    bool authenticate(const std::string &username, const std::string &password);
     bool readResponse(char *);
     std::string getRoleFromServer();
     bool sendOption(std::string option);
     void closeConnection();
+std::string addItem(std::string name, std::string price, std::string availability, std::string mealTypeId);
 };

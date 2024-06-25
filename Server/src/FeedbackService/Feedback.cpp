@@ -19,4 +19,6 @@
     int Feedback::getItemId() const {
         return itemId;
     }
-
+    int Feedback::getUserId() const {
+        return userId;
+    }

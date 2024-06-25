@@ -1,5 +1,5 @@
 
-#include<string>
+#include <string>
 class Feedback
 {
 private:
@@ -8,18 +8,23 @@ private:
     std::string comment;
     std::string date;
     int itemId;
+    int userId;
 
 public:
-    Feedback(int feedbackId,double rating, std::string comment,std::string date,int itemId) : feedbackId(feedbackId),rating(rating),comment(comment),date(date),itemId(itemId){}
-    ~Feedback(){}
+    Feedback(int feedbackId, double rating, std::string comment, std::string date, int itemId, int userId) : feedbackId(feedbackId), rating(rating), comment(comment), date(date), itemId(itemId), userId(userId) {}
+    Feedback( double rating, std::string comment,  int itemId, int userId) : feedbackId(feedbackId), rating(rating), comment(comment),  itemId(itemId), userId(userId) {}
 
-    int getFeedbackId() const ;
+    ~Feedback() {}
 
-    double getRating() const ;
+    int getFeedbackId() const;
 
-    std::string getComment() const ;
+    double getRating() const;
 
-    std::string getDate() const ;
+    std::string getComment() const;
+
+    std::string getDate() const;
 
     int getItemId() const;
+
+    int getUserId() const;
 };
