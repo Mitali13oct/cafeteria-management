@@ -34,6 +34,34 @@ public:
         }
         return oss.str();
     }
+   static MealType mealTypeFromString(const std::string &typeStr)
+{
+    if (typeStr == "Breakfast") {
+        return MealType::Breakfast;
+    } else if (typeStr == "Lunch") {
+        return MealType::Lunch;
+    } else if (typeStr == "Dinner") {
+        return MealType::Dinner;
+    } else {
+        // Throw an exception or handle invalid input as needed
+        throw std::invalid_argument("Invalid meal type string");
+    }
+}
+
+static std::string  mealTypeToString(MealType type)
+{
+    switch (type) {
+        case MealType::Breakfast:
+            return "Breakfast";
+        case MealType::Lunch:
+            return "Lunch";
+        case MealType::Dinner:
+            return "Dinner";
+        default:
+            // Throw an exception or handle unexpected enum value
+            throw std::invalid_argument("Invalid meal type");
+    }
+}
     static std::string getCurrentDate()
 {
     time_t now = time(0);

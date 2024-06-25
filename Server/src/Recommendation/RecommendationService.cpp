@@ -77,7 +77,7 @@ void RecommendationService::generateRecommendations(MenuRepository *type)
         recommendations.push_back(recommendation);
     }
 
-    // Store recommendations in the repository
+    
     for (const Recommendation &recommendation : recommendations)
     {
         recommendationRepository->addRecommendation(recommendation);
@@ -106,19 +106,93 @@ std::string RecommendationService::getAllRecommendations(MealType mealtype)
         itemIds.push_back(recommendation.getItemid());
     }
 
-    // Fetch item names for the item IDs
+    
     std::map<int, std::string> itemNames = recommendationRepository->getItemNames(itemIds);
     std::string result;
     for (const auto &recommendation : existingRecommendations)
     {
-         std::string itemName = itemNames[recommendation.getItemid()];  // Get the item name for the item ID
+        std::string itemName = itemNames[recommendation.getItemid()]; 
 
         result += "ID: " + std::to_string(recommendation.getRecommendationId()) + ", " +
                   "Rating: " + std::to_string(recommendation.getTotalRating()) + ", " +
                   "Meal Type: " + mealTypeStr + ", " +
                   "Date: " + recommendation.getRecommendationDate() + ", " +
-                //   "ItemId: " + std::to_string(recommendation.getItemid()) + ", " +
-                  "ItemName: " + itemName + "\n";  // Include item name
+                  "ItemName: " + itemName + "\n"; 
     }
     return result;
 }
+void RecommendationService::rollOutRecommendations(int numberOfItems, std::string mealTypeStr)
+{
+    std::vector<Recommendation> recommendations = recommendationRepository->getAllRecommendations(mealTypeStr); // Fetch all recommendations
+
+    int count = 0;
+    for (const auto &recommendation : recommendations)
+    {
+        if (count >= numberOfItems)
+        {
+            break; 
+        }
+        recommendationRepository->updateRecommendationRolledOutStatus(recommendation.getRecommendationId(), true);
+        ++count;
+    }
+}
+std::string RecommendationService::getRolledOutItemsForToday()
+{
+
+    std::vector<Recommendation> rolledOutRecommendations = recommendationRepository->getRolledOutRecommendations();
+    std::vector<int> itemIds;
+    for (const auto &recommendation : rolledOutRecommendations)
+    {
+        itemIds.push_back(recommendation.getItemid());
+    }
+    std::map<int, std::string> itemNames = recommendationRepository->getItemNames(itemIds);
+
+    std::ostringstream result;
+    result << "Items Rolled Out for Today\n";
+
+    for (const auto &recommendation : rolledOutRecommendations)
+    {
+        int itemId = recommendation.getItemid();
+        std::string itemName = itemNames[itemId];
+
+        result << "ID: " + std::to_string(recommendation.getRecommendationId()) + ", " +
+                      "Rating: " + std::to_string(recommendation.getTotalRating()) + ", " +
+                      "ItemName: " + itemName + "\n"; 
+    }
+
+    return result.str();
+}
+void RecommendationService ::voteForItem(int id) { recommendationRepository->voteItem(id); }
+
+
+std::string RecommendationService::getVotedItems(const std::string &mealTypeStr) {
+    std::vector<Recommendation> recommendations = recommendationRepository->getVotedItems(mealTypeStr);
+    std::vector<int> recommendationIds;
+    
+    for (const auto &recommendation : recommendations) {
+        recommendationIds.push_back(recommendation.getRecommendationId());
+    }
+    
+    std::map<int, int> voteCounts = recommendationRepository->getVoteCounts(recommendationIds);
+    std::vector<int> itemIds;
+    
+    for (const auto &recommendation : recommendations) {
+        itemIds.push_back(recommendation.getItemid());
+    }
+    
+    std::map<int, std::string> itemNames = recommendationRepository->getItemNames(itemIds);
+    std::ostringstream result;
+
+    for (const auto &rec : recommendations) {
+        int itemId = rec.getItemid();
+        int recommendationId = rec.getRecommendationId();
+        std::string itemName = itemNames[itemId];
+        int voteCount = voteCounts[recommendationId];
+
+        result << "ID: " + std::to_string(recommendationId) + ", Name: " + itemName + ", Votes: " + std::to_string(voteCount) + "\n";
+    }
+    
+    return result.str();
+}
+
+void RecommendationService::markItemAsPrepared(int id) {}

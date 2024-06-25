@@ -200,6 +200,29 @@ void handleChefOptions(Client &client)
         client.sendOption(mealTypeStr);
         client.readResponse(buffer);
     }
+    else if (option == 2)
+    {
+        char buffer[BUFFER_SIZE] = {0};
+        client.readResponse(buffer);
+        std::string mealTypeStr;
+        std::cin >> mealTypeStr;
+        client.sendOption(mealTypeStr);
+        client.readResponse(buffer);
+        std::string number;
+        std::cin >> number;
+        client.sendOption(number);
+        client.readResponse(buffer);
+    }
+    else if (option == 3)
+    {
+        char buffer[BUFFER_SIZE] = {0};
+
+        client.readResponse(buffer);
+        std::string mealTypeStr;
+        std::cin >> mealTypeStr;
+        client.sendOption(mealTypeStr);
+        client.readResponse(buffer);
+    }
 }
 void handleEmployeeOptions(Client &client)
 {
@@ -218,6 +241,15 @@ void handleEmployeeOptions(Client &client)
         std::string mealtype;
         std::cin >> mealtype;
         client.sendOption(mealtype);
+
+        client.readResponse(buffer);
+
+        std::string itemID;
+        std::cout << "Enter Item IDs you want to vote for (comma-separated): ";
+        std::cin.ignore();
+        std::getline(std::cin, itemID);
+
+        client.sendOption(itemID);
 
         client.readResponse(buffer);
     }
@@ -240,14 +272,14 @@ void handleEmployeeOptions(Client &client)
         client.sendOption(mealTypeStr);
         client.readResponse(buffer);
 
-        std::string itemID,comment,rating;
-        std::cout<<"Enter item ID to give Feedback and rating on: ";
-        std::cin>>itemID;
-        std::cout<<"Enter comment: ";
-        std::cin>>comment;
-        std::cout<<"Enter Rating: ";
-        std::cin>> rating;
-        std::map < std::string , std::string > feedback ={{"ItemId",itemID},{"comment",comment},{"rating",rating}};
+        std::string itemID, comment, rating;
+        std::cout << "Enter item ID to give Feedback and rating on: ";
+        std::cin >> itemID;
+        std::cout << "Enter comment: ";
+        std::cin >> comment;
+        std::cout << "Enter Rating: ";
+        std::cin >> rating;
+        std::map<std::string, std::string> feedback = {{"ItemId", itemID}, {"comment", comment}, {"rating", rating}};
         client.sendMulitpleDetails(feedback);
         client.readResponse(buffer);
     }

@@ -8,13 +8,39 @@ RecommendationRepository::~RecommendationRepository() {}
 void RecommendationRepository::addRecommendation(const Recommendation &recommendation)
 {
     std::map<std::string, std::string> data = {
-        {"type", recommendation.getType() == MealType::Lunch ? "Lunch" : (recommendation.getType() == MealType::Dinner ? "Dinner" : "Breakfast")},
+        {"type", Utility::mealTypeToString(recommendation.getType())},
         {"recommendationDate", recommendation.getRecommendationDate()},
         {"totalRating", std::to_string(recommendation.getTotalRating())},
         {"ItemID", std::to_string(recommendation.getItemid())}};
     database.insert("Recommendation", data);
 }
+void RecommendationRepository::voteItem(int id){
+    std::map<std::string, std::string> filter = {
+        {"recommendationId", std::to_string(id)}
+    };
 
+    sql::ResultSet *res = database.selectOne("Vote", filter);
+    if (res->next()) {
+        int voteCount = res->getInt("voteCount");
+        voteCount++;
+
+        std::map<std::string, std::string> updateValues = {
+            {"voteCount", std::to_string(voteCount)}
+        };
+
+        database.update("Vote", updateValues, filter);
+    } else {
+        std::cout<<id<<"\n";
+        std::map<std::string, std::string> insertValues = {
+            {"recommendationId", std::to_string(id)},
+            {"voteCount", "1"} 
+        };
+
+        database.insert("Vote", insertValues);
+    }
+
+    delete res;
+}
 void RecommendationRepository::deleteRecommendation(int recommendationId)
 {
     std::map<std::string, std::string> filter = {
@@ -34,22 +60,11 @@ std::vector<Recommendation> RecommendationRepository::getAllRecommendations(std:
     {
         int recommendationId = res->getInt("recommendationId");
 
-        MealType type;
-        if (mealType == "Lunch")
-        {
-            type = MealType::Lunch;
-        }
-        else if (mealType == "Dinner")
-        {
-            type = MealType::Dinner;
-        }
-        else if (mealType == "Breakfast")
-        {
-            type = MealType::Breakfast;
-        }
+        
         std::string recommendationDate = res->getString("recommendationDate");
         int totalRating = res->getInt("totalRating");
         int itemid = res->getInt("ItemId");
+        MealType type  = Utility ::mealTypeFromString(res->getString("type"));
         Recommendation recommendation(
             recommendationId,
             type,
@@ -62,6 +77,37 @@ std::vector<Recommendation> RecommendationRepository::getAllRecommendations(std:
     delete res;
     return recommendations;
 }
+
+std::map<int, int> RecommendationRepository::getVoteCounts(const std::vector<int>& recommendationIds) {
+    std::map<int, int> voteCounts;
+    if (recommendationIds.empty()) {
+        return voteCounts;
+    }
+
+    std::ostringstream idList;
+    for (size_t i = 0; i < recommendationIds.size(); ++i) {
+        idList << recommendationIds[i];
+        if (i < recommendationIds.size() - 1) {
+            idList << ", ";
+        }
+    }
+
+    std::map<std::string, std::string> filter = {
+        {"recommendationId", "(" + idList.str() + ")"}
+    };
+    
+    sql::ResultSet* res = database.selectAll("Vote", filter, {}, "IN");
+    
+    while (res->next()) {
+        int recommendationId = res->getInt("recommendationId");
+        int voteCount = res->getInt("voteCount");
+        voteCounts[recommendationId] = voteCount;
+    }
+    delete res;
+    return voteCounts;
+}
+
+
 std::map<int, std::string> RecommendationRepository::getItemNames(const std::vector<int> &itemIds) const
 {
     std::map<int, std::string> itemNames;
@@ -92,14 +138,63 @@ std::map<int, std::string> RecommendationRepository::getItemNames(const std::vec
     delete res;
     return itemNames;
 }
+std::vector<Recommendation> RecommendationRepository::getRolledOutRecommendations() const
+{
+    std::map<std::string, std::string> filter = {
+        {"recommendationDate", Utility::getCurrentDate()},
+        {"isRolledOut", "1"} 
+    };
 
-// Recommendation RecommendationRepository::getRecommendationById(int recommendationId) const {
-//     std::map<std::string, std::string> filter = {
-//         {"recommendationId", std::to_string(recommendationId)}
-//     };
-//     sql::ResultSet *res = database.selectAll("Recommendation", filter);
-//     Recommendation recommendation(0, MealType::Lunch, "", 0, false, 0);
+    sql::ResultSet *res = database.selectAll("Recommendation", filter);
+    std::vector<Recommendation> recommendations;
+    while (res->next())
+    {
+        int recommendationId = res->getInt("recommendationId");
+       std::string recommendationDate = res->getString("recommendationDate");
+       MealType type  = Utility ::mealTypeFromString(res->getString("type"));
+        int totalRating = res->getInt("totalRating");
+        int itemid = res->getInt("ItemId");
+        Recommendation recommendation(
+            recommendationId,
+            type,
+            recommendationDate,
+            totalRating,
+            itemid);
 
-//     if (res->next()) {
-//         int recommendationId = res->getInt("recommendationId");
-//         std::string typeStr = res
+        recommendations.push_back(recommendation);
+    }
+    return recommendations;
+}
+void RecommendationRepository::updateRecommendationRolledOutStatus(int recommendationId, bool isRolledOut)
+{
+    std::map<std::string, std::string> data = {
+        {"isRolledOut", isRolledOut ? "1" : "0"}
+    };
+    std::map<std::string, std::string> filter = {
+        {"recommendationId", std::to_string(recommendationId)}
+    };
+    database.update("Recommendation", data, filter);
+}
+std::vector<Recommendation> RecommendationRepository::getVotedItems(const std::string &mealTypeStr) const{
+    std::map<std::string, std::string> filter = {
+        {"type", mealTypeStr}
+    };
+    std::map<std::string, std::string> orderBy = {
+        {"voteCount", "desc"}
+    };
+
+    sql::ResultSet *res = database.selectAll("Recommendation r JOIN Vote v ON r.recommendationId = v.recommendationId", filter, orderBy);
+    std::vector<Recommendation> recommendations;
+    while (res->next())
+    {
+        int recommendationId = res->getInt("recommendationId");
+        std::string recommendationDate = res->getString("recommendationDate");
+        MealType type = Utility::mealTypeFromString(res->getString("type"));
+        int totalRating = res->getInt("totalRating");
+        int itemId = res->getInt("ItemId");
+        Recommendation recommendation(recommendationId, type, recommendationDate, totalRating, itemId);
+        recommendations.push_back(recommendation);
+    }
+    delete res;
+    return recommendations;
+}

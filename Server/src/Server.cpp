@@ -64,16 +64,7 @@ std::string Server::handleChef(User *user, int socket, char *buffer)
     Chef *chef = dynamic_cast<Chef *>(user);
     int option = readOptionFromClient(socket, buffer);
     std::string result;
-    if (option == 1) // Get Recommendation and then roll out to employee
-    {
-        std::string mealTypeStr;
-        sendPrompt(socket, "Enter the meal type to view items (Breakfast/Lunch/Dinner): ");
-        if (!readFromSocket(socket, buffer, mealTypeStr))
-        {
-            return "Failed to read meal type";
-        }
-        // FeedbackRepository frepo;
-        FeedbackService feedbackService;
+    FeedbackService feedbackService;
 
         WordLoader wload;
 
@@ -83,6 +74,25 @@ std::string Server::handleChef(User *user, int socket, char *buffer)
 
         RecommendationRepository recommendationRepository;
         RecommendationService recommendationService(&recommendationRepository, feedbackService, sentimentAnalyzer);
+    if (option == 1) // Get Recommendation and then roll out to employee
+    {
+        std::string mealTypeStr;
+        sendPrompt(socket, "Enter the meal type to view items (Breakfast/Lunch/Dinner): ");
+        if (!readFromSocket(socket, buffer, mealTypeStr))
+        {
+            return "Failed to read meal type";
+        }
+        // FeedbackRepository frepo;
+        // FeedbackService feedbackService;
+
+        // WordLoader wload;
+
+        // std::unordered_set<std::string> positive = wload.loadWords("/home/L&C/Cafeteria-management/PositiveWords.txt");
+        // std::unordered_set<std::string> negative = wload.loadWords("/home/L&C/Cafeteria-management/NegativeWords.txt");
+        // SentimentAnalyzer sentimentAnalyzer(positive, negative);
+
+        // RecommendationRepository recommendationRepository;
+        // RecommendationService recommendationService(&recommendationRepository, feedbackService, sentimentAnalyzer);
         MenuRepository *menuRepository;
         MealType mealType;
 
@@ -102,37 +112,77 @@ std::string Server::handleChef(User *user, int socket, char *buffer)
         std::string recommendations = recommendationService.getAllRecommendations(mealType);
         if (recommendations.empty())
         {
-            MenuRepository *menuRepository;
-            if (mealTypeStr == "Breakfast")
-            {
-                menuRepository = new BreakfastRepository();
-            }
-            else if (mealTypeStr == "Lunch")
-            {
-                // menuRepository = new LunchRepository();
-            }
-            else if (mealTypeStr == "Dinner")
-            {
-                // menuRepository = new DinnerRepository();
-            }
 
             recommendationService.generateRecommendations(menuRepository);
             recommendations = recommendationService.getAllRecommendations(mealType);
         }
         sendPrompt(socket, recommendations);
-        sendPrompt(socket,"How many items to rollOut: ");
-        std::string numberStr;
-        readFromSocket(socket,buffer,numberStr);
-        int number = std::stoi(numberStr);
-        
     }
     else if (option == 2)
     {
-        result = "Generate Monthly Report";
+
+        std::string mealTypeStr;
+        sendPrompt(socket, "Enter the meal type to view items (Breakfast/Lunch/Dinner): ");
+        if (!readFromSocket(socket, buffer, mealTypeStr))
+        {
+            return "Failed to read meal type";
+        }
+        MenuRepository *menuRepository;
+        MealType mealType;
+
+        if (mealTypeStr == "Breakfast")
+        {
+            mealType = MealType::Breakfast;
+            menuRepository = (new BreakfastRepository());
+        }
+        else if (mealTypeStr == "Lunch")
+        {
+            mealType = MealType::Lunch;
+        }
+        else if (mealTypeStr == "Dinner")
+        {
+            mealType = MealType::Dinner;
+        }
+        // FeedbackService feedbackService;
+
+        // WordLoader wload;
+
+        // std::unordered_set<std::string> positive = wload.loadWords("/home/L&C/Cafeteria-management/PositiveWords.txt");
+        // std::unordered_set<std::string> negative = wload.loadWords("/home/L&C/Cafeteria-management/NegativeWords.txt");
+        // SentimentAnalyzer sentimentAnalyzer(positive, negative);
+
+        // RecommendationRepository recommendationRepository;
+        // RecommendationService recommendationService(&recommendationRepository, feedbackService, sentimentAnalyzer);
+        std::string recommendations = recommendationService.getAllRecommendations(mealType);
+
+        if (recommendations.empty())
+        {
+            std::cout << "121" << "\n";
+            return "Recommendation not generated";
+        }
+        std::cout << "122" << "\n";
+        sendPrompt(socket, "Enter numbe of items to rollOut: ");
+        std::string numberStr;
+
+        readFromSocket(socket, buffer, numberStr);
+        int number = std::stoi(numberStr);
+        recommendationService.rollOutRecommendations(number, mealTypeStr);
+        std::cout << "123" << "\n";
+        sendPrompt(socket, "Rolled out of recommendation");
     }
     else if (option == 3)
     {
         result = "Choose Item to prepare";
+
+        std::string mealTypeStr;
+        sendPrompt(socket, "Enter the meal type to view items (Breakfast/Lunch/Dinner): ");
+        if (!readFromSocket(socket, buffer, mealTypeStr))
+        {
+            return "Failed to read meal type";
+        }
+
+        std::string votedItems = recommendationService.getVotedItems(mealTypeStr);
+        sendPrompt(socket, votedItems);
     }
     {
         result = "Invalid Option";
@@ -237,47 +287,61 @@ std::string Server::handleEmployee(User *user, int socket, char *buffer)
     }
     else if (option == 2)
     {
+        result = "Vote on item";
+        std::string mealTypeStr;
+        sendPrompt(socket, "Enter the meal type to view items (Breakfast/Lunch/Dinner): ");
+        if (!readFromSocket(socket, buffer, mealTypeStr))
+        {
+            return "Failed to read meal type";
+        }
+        MenuRepository *menuRepository;
+        MealType mealType;
 
-        // std::string mealTypeStr;
-        // sendPrompt(socket, "Enter the meal type to view items (Breakfast/Lunch/Dinner): ");
-        // if (!readFromSocket(socket, buffer, mealTypeStr))
-        // {
-        //     return "Failed to read meal type";
-        // }
+        if (mealTypeStr == "Breakfast")
+        {
+            mealType = MealType::Breakfast;
+            menuRepository = (new BreakfastRepository());
+        }
+        else if (mealTypeStr == "Lunch")
+        {
+            mealType = MealType::Lunch;
+        }
+        else if (mealTypeStr == "Dinner")
+        {
+            mealType = MealType::Dinner;
+        }
+        FeedbackService feedbackService;
 
-        // // FeedbackRepository frepo;
-        // FeedbackService feedbackService;
+        WordLoader wload;
 
-        // WordLoader wload;
+        std::unordered_set<std::string> positive = wload.loadWords("/home/L&C/Cafeteria-management/PositiveWords.txt");
+        std::unordered_set<std::string> negative = wload.loadWords("/home/L&C/Cafeteria-management/NegativeWords.txt");
+        SentimentAnalyzer sentimentAnalyzer(positive, negative);
 
-        // std::unordered_set<std::string> positive = wload.loadWords("/home/L&C/Cafeteria-management/PositiveWords.txt");
-        // std::unordered_set<std::string> negative = wload.loadWords("/home/L&C/Cafeteria-management/NegativeWords.txt");
-        // SentimentAnalyzer sentimentAnalyzer(positive, negative);
+        RecommendationRepository recommendationRepository;
+        RecommendationService recommendationService(&recommendationRepository, feedbackService, sentimentAnalyzer);
+        sendPrompt(socket, recommendationService.getRolledOutItemsForToday());
 
-        // MenuRepository *menuRepository;
-        // MealType mealType;
-        // if (mealTypeStr == "Breakfast")
-        // {
-        //     mealType = MealType::Breakfast;
-        //     menuRepository = (new BreakfastRepository());
-        // }
-        // else if (mealTypeStr == "Lunch")
-        // {
-        //     mealType = MealType::Lunch;
-        // }
-        // else if (mealTypeStr == "Dinner")
-        // {
-        //     mealType = MealType::Dinner;
-        // }
-        // else
-        // {
-        //     return "Invalid meal type entered.";
-        // }
+        std::string selectedIDs;
+        if (!readFromSocket(socket, buffer, selectedIDs))
+        {
+            return "Failed to read item IDs";
+        }
 
-        // RecommendationRepository recommendationRepository;
-        // RecommendationService recommendationService(&recommendationRepository, feedbackService, sentimentAnalyzer);
-        // recommendationService.generateRecommendations(menuRepository);
-        // sendPrompt(socket, recommendationService.getAllRecommendations(mealType));
+        std::vector<int> selectedItems;
+        std::istringstream iss(selectedIDs);
+        std::string id;
+        while (std::getline(iss, id, ','))
+        {
+            selectedItems.push_back(std::stoi(id));
+        }
+
+        for (int id : selectedItems)
+        {
+            std::cout<<"1";
+            recommendationService.voteForItem(id);
+        }
+        sendPrompt(socket, "Voted on items");
     }
     else if (option == 3)
     {

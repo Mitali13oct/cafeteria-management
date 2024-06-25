@@ -45,14 +45,14 @@ private:
 
     static std::vector<std::string> showChefMenu()
     {
-        return {"1. View Menu Items\n2. Generate Monthly Report\n3. Send Notification\n"};
+        return {"1. Get Recommendations from Engine\n2. Roll out item from recommendation\n3. Choose item to prepare\n"};
 
         // Additional chef options here
     }
 
     static std::vector<std::string> showEmployeeMenu()
     {
-        return {"1. Choose Menu Item\n2. Get Recommendation \n3. View Notifications\n4. Provide Feedback"};
+        return {"1. Choose Menu Item\n2. Vote on recommendation \n3. View Notifications\n4. Provide Feedback"};
 
         // Additional employee options here
     }
