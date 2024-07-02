@@ -22,5 +22,6 @@ public:
     void voteItem(int id);
    std::vector<Recommendation>getVotedItems(const std::string &mealTypeStr) const;
    std::map<int, int> getVoteCounts(const std::vector<int>& recommendationIds) ;
+   void markAsPrepared(int);
 
 };

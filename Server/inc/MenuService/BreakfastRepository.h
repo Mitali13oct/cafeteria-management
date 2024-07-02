@@ -5,8 +5,6 @@
 class BreakfastRepository : public MenuRepository
 {
 private:
-    sql::Driver *driver;
-    sql::Connection *con;
 
     DatabaseRepository database;
 
@@ -22,4 +20,6 @@ public:
     void updateMenuItem(int, std::string, std::string) override;
     void deleteItem(int itemId) override;
     std::vector<MenuItem> getMenuItems() const override;
+     std::vector<MenuItem> getDiscardedItems()override;
+
 };

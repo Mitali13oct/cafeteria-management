@@ -4,8 +4,7 @@ void NotificationRepository::addNotification(const Notification &notification)
 {
     std::map<std::string, std::string> data = {
         {"notificationType", notification.getTypeAsString()},
-        {"message", notification.getMessage()},
-        {"notificationDate", notification.getDateTime()}
+        {"message", notification.getMessage()}
     };
 
     database.insert("Notification", data);

@@ -13,8 +13,8 @@ private:
     std::string dateTime;
 
 public:
-    Notification(NotificationType type, const std::string &msg, std::string time)
-        : id(-1), type(type), message(msg), dateTime(time) {}
+    Notification(NotificationType type, const std::string &msg)
+        : id(-1), type(type), message(msg) {}
     Notification(int id, NotificationType type, const std::string &msg, std::string time)
         : id(id), type(type), message(msg), dateTime(time) {}
     ~Notification() {}

@@ -15,7 +15,7 @@ private:
     FeedbackService &feedbackService;
     SentimentAnalyzer &sentimentAnalyzer;
     RecommendationRepository *recommendationRepository;
-
+    // NotificationService nservice;
 public:
     RecommendationService(RecommendationRepository *, FeedbackService &feedbackService, SentimentAnalyzer &sentimentAnalyzer);
     ~RecommendationService();
@@ -24,6 +24,6 @@ public:
     std::string getAllRecommendations(MealType mealtype);
     std::string getRolledOutItemsForToday();
     void voteForItem(int id);
-     std::string getVotedItems(const std::string &mealTypeStr);
-    void markItemAsPrepared(int id);
+    std::string getVotedItems(const std::string &mealTypeStr);
+    void prepareItem(int id);
 };

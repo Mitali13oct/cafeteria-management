@@ -27,3 +27,4 @@ admire
 commendable
 remarkable
 pleasing
+Tasty

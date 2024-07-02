@@ -30,6 +30,7 @@ void DatabaseRepository::insert(const std::string &entityName, const std::map<st
     query += ")";
 
     executeQuery(query, data);
+    std::cout<<"db\n";
 }
 
 void DatabaseRepository::update(const std::string &entityName, const std::map<std::string, std::string> &data, const std::map<std::string, std::string> &filter)

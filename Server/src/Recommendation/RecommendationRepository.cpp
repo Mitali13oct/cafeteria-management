@@ -177,7 +177,7 @@ void RecommendationRepository::updateRecommendationRolledOutStatus(int recommend
 }
 std::vector<Recommendation> RecommendationRepository::getVotedItems(const std::string &mealTypeStr) const{
     std::map<std::string, std::string> filter = {
-        {"type", mealTypeStr}
+        {"type", mealTypeStr}, {"DATE(voteDate)", Utility::getCurrentDate()}
     };
     std::map<std::string, std::string> orderBy = {
         {"voteCount", "desc"}
@@ -198,3 +198,12 @@ std::vector<Recommendation> RecommendationRepository::getVotedItems(const std::s
     delete res;
     return recommendations;
 }
+   void  RecommendationRepository::markAsPrepared(int id ){
+    std::map<std::string, std::string> data = {
+        {"isPrepared", "1"}
+    };
+    std::map<std::string, std::string> filter = {
+        {"recommendationId", std::to_string(id)}
+    };
+    database.update("Recommendation", data,filter);
+   }
