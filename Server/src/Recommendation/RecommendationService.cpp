@@ -2,17 +2,8 @@
 #include "RecommendationService.h"
 
 RecommendationService::RecommendationService(RecommendationRepository *r, FeedbackService &feedbackService, SentimentAnalyzer &sentimentAnalyzer)
-    : recommendationRepository(r), feedbackService(feedbackService), sentimentAnalyzer(sentimentAnalyzer) {}
+    : recommendationRepository(r), feedbackService(feedbackService), sentimentAnalyzer(sentimentAnalyzer), preferenceService() {}
 RecommendationService::~RecommendationService() {}
-
-std::string getCurrentDate()
-{
-    std::time_t now = std::time(0);
-    std::tm *localTime = std::localtime(&now);
-    std::ostringstream oss;
-    oss << std::put_time(localTime, "%Y-%m-%d");
-    return oss.str();
-}
 
 void RecommendationService::generateRecommendations(MenuRepository *type)
 {
@@ -111,17 +102,17 @@ std::string RecommendationService::getAllRecommendations(MealType mealtype)
     {
         std::string itemName = itemNames[recommendation.getItemid()];
 
-        result += "ItemName: " + itemName  + ", " +
+        result += "ItemName: " + itemName + ", " +
                   "Rating: " + std::to_string(recommendation.getTotalRating()) + ", " +
                   "Meal Type: " + mealTypeStr + ", " +
-                  "Date: " + recommendation.getRecommendationDate() + 
+                  "Date: " + recommendation.getRecommendationDate() +
                   "\n";
     }
     return result;
 }
 void RecommendationService::rollOutRecommendations(int numberOfItems, std::string mealTypeStr)
 {
-    std::vector<Recommendation> recommendations = recommendationRepository->getAllRecommendations(mealTypeStr); 
+    std::vector<Recommendation> recommendations = recommendationRepository->getAllRecommendations(mealTypeStr);
 
     int count = 0;
     for (const auto &recommendation : recommendations)
@@ -135,9 +126,9 @@ void RecommendationService::rollOutRecommendations(int numberOfItems, std::strin
     }
     NotificationRepository notificationrepo;
     NotificationService notificationService(&notificationrepo);
-    
-    std::string notification =  getRolledOutItemsForToday();
-   
+
+    std::string notification = getRolledOutItemsForToday();
+
     Notification notificationObj(NotificationType::Recommendation, notification);
 
     notificationService.addNotification(notificationObj);
@@ -168,6 +159,60 @@ std::string RecommendationService::getRolledOutItemsForToday()
 
     return result.str();
 }
+
+std::string RecommendationService::getSortedRecommendationsByPreference(int userId, MenuRepository *menuRepository)
+{
+   
+    Preference empPreference = preferenceService.loadPreference(userId);
+    
+    std::vector<Recommendation> rolledOutRecommendations = recommendationRepository->getRolledOutRecommendations();
+    std::vector<MenuItem> menuItems = menuRepository->getMenuItems();
+    std::unordered_map<int, MenuItem> menuItemMap;
+    for (const auto &recommendation : rolledOutRecommendations)
+    {
+        MenuItem item = menuRepository->getItemById(recommendation.getItemid());
+        menuItemMap.emplace(recommendation.getItemid(), item);
+    }
+    std::sort(rolledOutRecommendations.begin(), rolledOutRecommendations.end(),
+              [&menuItemMap, &empPreference](const Recommendation &a, const Recommendation &b)
+              {
+                  MenuItem itemA = menuItemMap[a.getItemid()];
+                  MenuItem itemB = menuItemMap[b.getItemid()];
+
+                  if (empPreference.getDietaryPreference() == "vegetarian")
+                  {
+                      if (itemA.getDietaryType() != "vegetarian" && itemB.getDietaryType() == "vegetarian")
+                          return false;
+                      if (itemA.getDietaryType() == "vegetarian" && itemB.getDietaryType() != "vegetarian")
+                          return true;
+                  }
+
+                 
+                  if (empPreference.getSpiceLevel() != itemA.getSpiceType() && empPreference.getSpiceLevel() == itemB.getSpiceType())
+                      return false;
+
+                 
+                  if (empPreference.getCuisinePreference() != itemA.getCuisineType() && empPreference.getCuisinePreference() == itemB.getCuisineType())
+                      return false;
+
+                  
+                  if (empPreference.hasSweetTooth() && !itemA.getSweetToothType() && itemB.getSweetToothType())
+                      return false;
+
+                  return true;
+              });
+    std::ostringstream result;
+    result << "Sorted Recommendations by your Preference:\n";
+    for (const auto &recommendation : rolledOutRecommendations)
+    {
+        MenuItem item = menuItemMap[recommendation.getItemid()];
+        result << " ID: " << recommendation.getRecommendationId() << ", Name: " << item.getName() << "\n";
+       
+    }
+
+    return result.str();
+}
+
 void RecommendationService ::voteForItem(int id) { recommendationRepository->voteItem(id); }
 void RecommendationService ::prepareItem(int id) { recommendationRepository->markAsPrepared(id); }
 

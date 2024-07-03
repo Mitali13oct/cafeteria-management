@@ -28,10 +28,7 @@ public:
 
     void remove(const std::string &entityName, const std::map<std::string, std::string> &filter);
     sql::ResultSet *executeSelectQuery(const std::string &query, const std::vector<std::string> &queryParams) const;
-    // sql::ResultSet* fetchDatawithCustomQuery(const std::string& query, const std::map<std::string, std::string>& filter) {
-    //     ensureInitialized();
-    //     return executeSelectQuery(query, filter);
-    // }
+
 
 private:
     sql::Connection *connection = nullptr;

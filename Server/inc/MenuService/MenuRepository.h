@@ -13,4 +13,5 @@ public:
     virtual std::vector<MenuItem> getMenuItems() const = 0;
     virtual MealType getMealType() = 0;
     virtual std::vector<MenuItem> getDiscardedItems() = 0;
+    virtual MenuItem getItemById(int id) = 0;
 };

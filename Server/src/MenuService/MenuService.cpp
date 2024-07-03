@@ -7,23 +7,36 @@ bool MenuService::addMenuItem(const MenuItem &item)
     NotificationService notificationService(&notificationrepo);
 
     std::string addNotification = "Added Item: " + item.getName();
-    std::cout<<"addNotification";
     Notification notificationObj(NotificationType::ItemAdded, addNotification);
 
     notificationService.addNotification(notificationObj);
 }
-bool MenuService::updateMenuItem(int itemId, std::string columnToUpdate, std::string value) { menuType->updateMenuItem(itemId, columnToUpdate, value); }
-bool MenuService::deleteItem(int itemId) { menuType->deleteItem(itemId); }
+bool MenuService::updateMenuItem(int itemId, std::string columnToUpdate, std::string value)
+{
+    menuType->updateMenuItem(itemId, columnToUpdate, value);
+    NotificationRepository notificationrepo;
+    NotificationService notificationService(&notificationrepo);
+    MenuItem item = menuType->getItemById(itemId);
+    std::string notification = "Updated Item: " + item.getName();
+    Notification notificationObj(NotificationType::ItemUpdated, notification);
+}
+bool MenuService::deleteItem(int itemId)
+{
+    menuType->deleteItem(itemId);
+    NotificationRepository notificationrepo;
+    NotificationService notificationService(&notificationrepo);
+    MenuItem item = menuType->getItemById(itemId);
+    std::string notification = "Deleted Item: " + item.getName();
+    Notification notificationObj(NotificationType::ItemDeleted, notification);
+}
 std::string MenuService::getAllMenuItem()
 {
-            std::cout<<"122\n";
 
     std::vector<MenuItem> items = menuType->getMenuItems();
     std::string result;
-
     for (const auto &item : items)
     {
-        result += "ID: " + std::to_string(item.getId()) + ", " + "Name: " + item.getName() + ", " + "Meal Type: " + Utility::mealTypeToString(item.getMealType()) + ", " + "Price: " + std::to_string(item.getPrice()) + ", " + "Availability: " + (item.getAvailability() ? "Yes" : "No") + "\n";
+        result += "ID: " + std::to_string(item.getId()) + ", " + "Name: " + item.getName() + ", " + "Price: " + std::to_string(item.getPrice()) + "\n";
     }
 
     return result;

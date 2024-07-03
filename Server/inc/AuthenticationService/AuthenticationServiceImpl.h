@@ -1,4 +1,4 @@
-#pragma Once
+#pragma once
 #include "AuthenticationService.h"
 #include "UserRepository.h"
 class AuthenticationServiceImpl : public AuthenticationService

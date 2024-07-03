@@ -1,18 +1,18 @@
-// BreakfastRepository.h
+// LunchRepository.h
 #pragma once
 #include "MenuRepository.h"
 
-class BreakfastRepository : public MenuRepository
+class LunchRepository : public MenuRepository
 {
 private:
 
     DatabaseRepository database;
 
 public:
-    BreakfastRepository() : database("RecommendationEngine", "mitalijain", "Mishu@777")
+    LunchRepository() : database("RecommendationEngine", "mitalijain", "Mishu@777")
     {
     }
-    ~BreakfastRepository()
+    ~LunchRepository()
     {
     }
     MealType getMealType();

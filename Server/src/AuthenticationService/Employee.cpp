@@ -11,7 +11,6 @@ void Employee::voteOnItem(std::vector<int> selectedItems)
 }
 void Employee::provideFeedback(int itemId, std::string comment, double rating)
 {
-    // FeedbackRepository feedbackRepository;
     Feedback f(rating, comment, itemId, this->getId());
     fService.addFeedback(f);
 }
@@ -21,11 +20,21 @@ std::string Employee::viewNotifications(NotificationType type)
 }
 std::string Employee::getAllMenuItem()
 {
-            std::cout<<"121\n";
-
     return menu.getAllMenuItem();
 }
-std::string Employee::getRolledOutItems()
+std::string Employee::getRolledOutItems(MenuRepository* mealType)
 {
-    return recommendationService.getRolledOutItemsForToday();
+    return recommendationService.getSortedRecommendationsByPreference(this->getId(),mealType);
+}
+
+void Employee::updateProfile(Preference newPreference)
+{
+
+    preference.setDietaryPreference(newPreference.getDietaryPreference());
+    preference.setSpiceLevel(newPreference.getSpiceLevel());
+    preference.setCuisinePreference(newPreference.getCuisinePreference());
+    preference.setSweetTooth(newPreference.hasSweetTooth());
+
+    preferenceService.savePreference(preference);
+
 }

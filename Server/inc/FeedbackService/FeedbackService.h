@@ -9,7 +9,6 @@ private:
 
 public:
     FeedbackService() : repository() {}
-    // FeedbackService() = default;
     ~FeedbackService() {}
     double calculateAverageRating(int itemId);
     void addFeedback(const Feedback &Feedback);

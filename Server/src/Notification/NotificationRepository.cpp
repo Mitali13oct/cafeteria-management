@@ -38,9 +38,13 @@ std::vector<Notification> NotificationRepository::getAllNotification(std::string
         {
             type = NotificationType::ItemAdded;
         }
-        else if (typeStr == "AvailabilityChange")
+        else if (typeStr == "ItemUpdated")
         {
-            type = NotificationType::AvailabilityChange;
+            type = NotificationType::ItemUpdated;
+        }
+         else if (typeStr == "ItemDeleted")
+        {
+            type = NotificationType::ItemDeleted;
         }
         Notification notification(
             notificationId,

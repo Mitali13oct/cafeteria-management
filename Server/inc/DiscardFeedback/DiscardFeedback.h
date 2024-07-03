@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 
 class DiscardFeedback {
@@ -8,12 +9,12 @@ private:
     std::string answer;
 
 public:
-    // Constructors
+   
     DiscardFeedback();
     DiscardFeedback(int itemId, const std::string &question);
     DiscardFeedback(int requestId, int itemId, const std::string &question, const std::string &answer);
 
-    // Getters and setters
+    
     int getRequestId() const;
     void setRequestId(int requestId);
 
@@ -26,7 +27,7 @@ public:
     const std::string & getanswer() const;
     void setanswer(const std::string &answer);
 
-    // Destructor
+    
     ~DiscardFeedback();
 };
 

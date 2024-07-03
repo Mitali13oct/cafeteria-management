@@ -1,11 +1,10 @@
 // MealType.h
-#ifndef MEALTYPE_H
-#define MEALTYPE_H
+#pragma once
 
 enum class MealType {
     Breakfast,
     Lunch,
-    Dinner
+    Dinner,
+    Unknown
 };
 
-#endif // MEALTYPE_H

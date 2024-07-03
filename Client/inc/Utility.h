@@ -10,15 +10,15 @@ public:
     static std::string showMenu(std::string role)
     {
         std::vector<std::string> options;
-        if (role== "Admin\n")
+        if (role== "Admin")
         {
             options = showAdminMenu();
         }
-        else if (role== "Chef\n")
+        else if (role== "Chef")
         {
             options = showChefMenu();
         }
-        else if (role == "Employee\n")
+        else if (role == "Employee")
         {
             options = showEmployeeMenu();
         }
@@ -45,20 +45,20 @@ public:
 private:
     static std::vector<std::string> showAdminMenu()
     {
-        return {"1. Add Menu Item\n2. Update Menu Item\n3. Delete Menu Item\n4. View All Menu Items\n5. View Discarded Items"};
+        return {"1. Add Menu Item\n2. Update Menu Item\n3. Delete Menu Item\n4. View All Menu Items\n5. View Discarded Items\n0. To exit"};
        
     }
 
     static std::vector<std::string> showChefMenu()
     {
-        return {"1. Get Recommendations from Engine\n2. Roll out item from recommendation\n3. Choose item to prepare\n4. View Discarded items"};
+        return {"1. Get Recommendations from Engine\n2. Roll out item from recommendation\n3. Choose item to prepare\n4. View Discarded items\n0. To exit"};
 
         
     }
 
     static std::vector<std::string> showEmployeeMenu()
     {
-        return {"1. Vote on recommendation \n2. View Notifications\n3. Provide Feedback"};
+        return {"1. Vote on recommendation \n2. View Notifications\n3. Provide Feedback\n4. Update Profile\n0. To exit"};
 
        
     }

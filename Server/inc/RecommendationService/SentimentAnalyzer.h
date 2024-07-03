@@ -20,4 +20,4 @@ public:
     int analyzeSentiment(const std::string& text) ;
 };
 
-#endif // SENTIMENT_ANALYZER_H
+#endif 

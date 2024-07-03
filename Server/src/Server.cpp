@@ -73,7 +73,6 @@ std::string Server::handleChef(User *user, int socket, char *buffer)
         }
 
         MenuRepository *menuRepository;
-        MealType mealType = Utility::mealTypeFromString(mealTypeStr);
 
         if (mealTypeStr == "Breakfast")
         {
@@ -81,9 +80,11 @@ std::string Server::handleChef(User *user, int socket, char *buffer)
         }
         else if (mealTypeStr == "Lunch")
         {
+            menuRepository = (new LunchRepository());
         }
         else if (mealTypeStr == "Dinner")
         {
+            menuRepository = (new DinnerRepository());
         }
 
         sendPrompt(socket, chef->getRecommendation(menuRepository));
@@ -97,7 +98,6 @@ std::string Server::handleChef(User *user, int socket, char *buffer)
             return "Failed to read meal type";
         }
         MenuRepository *menuRepository;
-        MealType mealType = Utility::mealTypeFromString(mealTypeStr);
 
         if (mealTypeStr == "Breakfast")
         {
@@ -106,18 +106,18 @@ std::string Server::handleChef(User *user, int socket, char *buffer)
         }
         else if (mealTypeStr == "Lunch")
         {
+            menuRepository = (new LunchRepository());
         }
         else if (mealTypeStr == "Dinner")
         {
+            menuRepository = (new DinnerRepository());
         }
         std::string recommendations = chef->getRecommendation(menuRepository);
 
         if (recommendations.empty())
         {
-            std::cout << "1210" << "\n";
             return "Recommendation not generated";
         }
-        std::cout << "1220" << "\n";
 
         sendPrompt(socket, recommendations + "Enter number of items to rollOut: ");
         std::string numberStr;
@@ -125,12 +125,11 @@ std::string Server::handleChef(User *user, int socket, char *buffer)
         readFromSocket(socket, buffer, numberStr);
         int number = std::stoi(numberStr);
         chef->rollOutMenu(number, mealTypeStr);
-        std::cout << "123" << "\n";
+
         sendPrompt(socket, "Rolled out of recommendation");
     }
     else if (option == 3)
     {
-        result = "Choose Item to prepare";
 
         std::string mealTypeStr;
         if (!readFromSocket(socket, buffer, mealTypeStr))
@@ -161,24 +160,22 @@ std::string Server::handleChef(User *user, int socket, char *buffer)
     {
         std::string mealTypeStr;
         readFromSocket(socket, buffer, mealTypeStr);
-        MealType mealType;
         MenuService service;
         if (mealTypeStr == "Breakfast")
         {
-            mealType = MealType::Breakfast;
+
             service = (new BreakfastRepository());
         }
         else if (mealTypeStr == "Lunch")
         {
-            mealType = MealType::Lunch;
+            service = (new LunchRepository());
         }
         else if (mealTypeStr == "Dinner")
         {
-            mealType = MealType::Dinner;
+            service = (new DinnerRepository());
         }
         else
         {
-            mealType = MealType::Breakfast;
         }
         chef->setService(service);
 
@@ -223,18 +220,23 @@ std::string Server::handleAdmin(User *user, int socket, char *buffer)
         std::string mealTypeStr = itemDetails["MealType"];
         std::string price = itemDetails["Price"];
         std::string available = itemDetails["AvailabilityStatus"];
+        std::string dietaryType = itemDetails["DietaryType"];
+        std::string spiceType = itemDetails["SpiceType"];
+        std::string cuisineType = itemDetails["CuisineType"];
+        std::string sweetTooth = itemDetails["SweetToothType"];
         MealType mealType = Utility::mealTypeFromString(mealTypeStr);
         MenuRepository *repo;
         if (mealType == MealType::Breakfast)
         {
-            std::cout<<"1\n";
             repo = (new BreakfastRepository());
         }
         else if (mealType == MealType::Lunch)
         {
+            repo = (new LunchRepository());
         }
         else if (mealType == MealType::Dinner)
         {
+            repo = (new DinnerRepository());
         }
         else
         {
@@ -242,21 +244,12 @@ std::string Server::handleAdmin(User *user, int socket, char *buffer)
         }
 
         double price1 = std::stod(price);
-        bool a;
-        if (available == "Yes")
-        {
-            a = true;
-        }
-        else
-        {
-            a = false;
-        }
-        MenuItem item(name, price1, mealType, a);
-         std::cout<<"2\n";
+        bool a = (available == "Yes");
+        bool sweetToothType = (sweetTooth == "Yes");
+        MenuItem item(name, price1, mealType, a, dietaryType, spiceType, cuisineType, sweetToothType);
+
         MenuService service(repo);
-         std::cout<<"3\n";
         admin->setService(service);
-         std::cout<<"4\n";
         admin->addMenuItem(item);
         result = "Item added successfully.";
     }
@@ -284,7 +277,7 @@ std::string Server::handleAdmin(User *user, int socket, char *buffer)
         readFromSocket(socket, buffer, id);
         int id1 = std::stoi(id);
         admin->deleteItem(id1);
-        result = "Delete Menu Item";
+        result = "Deleted Menu Item";
     }
     else if (option == 4)
     {
@@ -294,24 +287,22 @@ std::string Server::handleAdmin(User *user, int socket, char *buffer)
     {
         std::string mealTypeStr;
         readFromSocket(socket, buffer, mealTypeStr);
-        MealType mealType;
         MenuService service;
         if (mealTypeStr == "Breakfast")
         {
-            mealType = MealType::Breakfast;
+
             service = (new BreakfastRepository());
         }
         else if (mealTypeStr == "Lunch")
         {
-            mealType = MealType::Lunch;
+            service = (new LunchRepository());
         }
         else if (mealTypeStr == "Dinner")
         {
-            mealType = MealType::Dinner;
+            service = (new DinnerRepository());
         }
         else
         {
-            mealType = MealType::Breakfast;
         }
 
         admin->setService(service);
@@ -356,23 +347,25 @@ std::string Server::handleEmployee(User *user, int socket, char *buffer)
             return "Failed to read meal type";
         }
         MenuRepository *menuRepository;
-        MealType mealType;
+        MenuService service;
 
         if (mealTypeStr == "Breakfast")
         {
-            mealType = MealType::Breakfast;
             menuRepository = (new BreakfastRepository());
+            service = (new BreakfastRepository());
         }
         else if (mealTypeStr == "Lunch")
         {
-            mealType = MealType::Lunch;
+            menuRepository = (new LunchRepository());
+            service = (new LunchRepository());
         }
         else if (mealTypeStr == "Dinner")
         {
-            mealType = MealType::Dinner;
+            menuRepository = (new DinnerRepository());
+            service = (new DinnerRepository());
         }
-
-        sendPrompt(socket, emp->getRolledOutItems());
+        emp->setService(service);
+        sendPrompt(socket, emp->getRolledOutItems(menuRepository));
 
         std::string selectedIDs;
         if (!readFromSocket(socket, buffer, selectedIDs))
@@ -396,55 +389,56 @@ std::string Server::handleEmployee(User *user, int socket, char *buffer)
         std::string notificationTypeStr;
         sendPrompt(socket, "Enter the Notification type to view Notification(AvailabilityChange/ ItemAdded/ Recommendation )");
         readFromSocket(socket, buffer, notificationTypeStr);
-
+        NotificationService nservice = new NotificationRepository();
         NotificationType type;
-        std::cout << notificationTypeStr << '\n';
+        
         if (notificationTypeStr == "Recommendation")
         {
+            
             type = NotificationType::Recommendation;
         }
         else if (notificationTypeStr == "ItemAdded")
         {
             type = NotificationType::ItemAdded;
         }
-        else if (notificationTypeStr == "AvailabilityChange")
+        else if (notificationTypeStr == "ItemUpdated")
         {
-            type = NotificationType::AvailabilityChange;
+            type = NotificationType::ItemUpdated;
         }
-
+        else if (notificationTypeStr == "ItemDeleted")
+        {
+            type = NotificationType::ItemDeleted;
+        }
+        emp->setNotificationService(nservice);
         return emp->viewNotifications(type);
     }
     else if (option == 3)
     {
 
         std::string mealTypeStr;
-        MealType mealType;
         if (!readFromSocket(socket, buffer, mealTypeStr))
         {
             return "failed to read meal type";
         }
-
         MenuService service;
         if (mealTypeStr == "Breakfast")
         {
-            std::cout << "118\n";
-            mealType = MealType::Breakfast;
             service = (new BreakfastRepository());
         }
         else if (mealTypeStr == "Lunch")
         {
-            mealType = MealType::Lunch;
+            service = (new LunchRepository());
         }
         else if (mealTypeStr == "Dinner")
         {
-            mealType = MealType::Dinner;
+            service = (new DinnerRepository());
         }
         else
         {
         }
-        std::cout << "119\n";
+
         emp->setService(service);
-        std::cout << "120\n";
+
         sendPrompt(socket, emp->getAllMenuItem());
 
         std::map<std::string, std::string> feedback;
@@ -457,6 +451,27 @@ std::string Server::handleEmployee(User *user, int socket, char *buffer)
         emp->provideFeedback(std::stoi(id), comment, std::stod(rating));
 
         result = "Added feedback successfully\n";
+    }
+    else if (option == 4)
+    {
+        std::map<std::string, std::string> preferenceDetail;
+        readMultipleFromSocket(socket, buffer, preferenceDetail);
+        std::string dietary = preferenceDetail["Dietary Preference"];
+        std::string spiceLevel = preferenceDetail["Spice Level"];
+        std::string cuisine = preferenceDetail["Cuisine Preference"];
+        std::string sweetToothStr = preferenceDetail["Sweet Tooth"];
+        bool sweetTooth;
+        if (sweetToothStr == "Yes")
+        {
+            sweetTooth = true;
+        }
+        else
+        {
+            sweetTooth = false;
+        }
+        Preference preference(emp->getId(), dietary, spiceLevel, cuisine, sweetTooth);
+        emp->updateProfile(preference);
+        sendPrompt(socket, "Preference updated");
     }
     else
     {
@@ -485,7 +500,6 @@ void *Server::handleClient(void *socket_desc)
     }
     else
     {
-        std::cout << "121" << "\n";
         server->sendPrompt(new_socket, "Authentication Successful");
     }
 
@@ -548,20 +562,19 @@ std::string Server::processViewItemsOption(Admin *admin, int socket, char *buffe
     if (!readFromSocket(socket, buffer, mealTypeStr))
         return "";
 
-    MealType mealType;
     MenuService service;
     if (mealTypeStr == "Breakfast")
     {
-        mealType = MealType::Breakfast;
+
         service = (new BreakfastRepository());
     }
     else if (mealTypeStr == "Lunch")
     {
-        mealType = MealType::Lunch;
+        service = (new LunchRepository());
     }
     else if (mealTypeStr == "Dinner")
     {
-        mealType = MealType::Dinner;
+        service = (new DinnerRepository());
     }
     else
     {

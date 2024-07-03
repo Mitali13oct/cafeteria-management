@@ -1,28 +1,38 @@
-    #include"Notification.h"
-    
-    int Notification::getNotificationId() const {
-        return id;
-    }
+#include "Notification.h"
 
-    NotificationType Notification::getType() const {
-        return type;
-    }
+int Notification::getNotificationId() const
+{
+    return id;
+}
 
-    std::string Notification::getTypeAsString() const {
-        switch (type) {
-            case NotificationType::Recommendation: return "Recommendation";
-            case NotificationType::ItemAdded: return "ItemAdded";
-            case NotificationType::AvailabilityChange: return "AvailabilityChange";
-            default: return "Unknown";
-        }
-    }
+NotificationType Notification::getType() const
+{
+    return type;
+}
 
-    const std::string& Notification::getMessage() const {
-        return message;
+std::string Notification::getTypeAsString() const
+{
+    switch (type)
+    {
+    case NotificationType::Recommendation:
+        return "Recommendation";
+    case NotificationType::ItemAdded:
+        return "ItemAdded";
+    case NotificationType::ItemUpdated:
+        return "ItemUpdated";
+    case NotificationType::ItemDeleted:
+        return "ItemDeleted";
+    default:
+        return "Unknown";
     }
+}
 
-    std::string Notification::getDateTime() const {
-        return dateTime;
-    }
- 
-    
+const std::string &Notification::getMessage() const
+{
+    return message;
+}
+
+std::string Notification::getDateTime() const
+{
+    return dateTime;
+}

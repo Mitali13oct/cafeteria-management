@@ -4,7 +4,6 @@ std::string Admin::getRole() const { return "Admin"; }
 
 void Admin::addMenuItem(const MenuItem &item)
 {
-    std::cout << "admin\n";
     menu.addMenuItem(item);
 }
 void Admin::updateMenuItem(int itemId, std::string columnToUpdate, std::string value)

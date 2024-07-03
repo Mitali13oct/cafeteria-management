@@ -1,26 +1,26 @@
-
-#include "BreakfastRepository.h"
-MealType BreakfastRepository::getMealType()
+// DinnerRepository.cpp
+#include "DinnerRepository.h"
+MealType DinnerRepository::getMealType()
 {
-    return MealType::Breakfast;
+    return MealType::Dinner;
 }
-void BreakfastRepository::addMenuItem(const MenuItem &item)
+void DinnerRepository::addMenuItem(const MenuItem &item)
 {
 
     std::map<std::string, std::string> data = {
         {"Name", item.getName()},
         {"Price", std::to_string(item.getPrice())},
-        {"MealType", "Breakfast"},
+        {"MealType", "Dinner"},
         {"AvailabilityStatus", item.getAvailability() ? "1" : "0"},
         {"dietaryType", item.getDietaryType()},
         {"spiceType", item.getSpiceType()},
         {"cuisineType", item.getCuisineType()},
         {"sweetToothType", item.getSweetToothType() ? "1" : "0"}};
-    
+    std::cout << "Bf\n";
     database.insert("MenuItem", data);
 }
 
-void BreakfastRepository::updateMenuItem(int itemId, std::string columnToUpdate, std::string value)
+void DinnerRepository::updateMenuItem(int itemId, std::string columnToUpdate, std::string value)
 {
     std::map<std::string, std::string> data = {
         {columnToUpdate, value}};
@@ -31,15 +31,15 @@ void BreakfastRepository::updateMenuItem(int itemId, std::string columnToUpdate,
     database.update("MenuItem", data, filter);
 }
 
-void BreakfastRepository::deleteItem(int itemId)
+void DinnerRepository::deleteItem(int itemId)
 {
     std::map<std::string, std::string> filter = {
         {"ItemID", std::to_string(itemId)}};
     database.remove("MenuItem", filter);
 }
-MenuItem BreakfastRepository::getItemById(int id)
+MenuItem DinnerRepository::getItemById(int id)
 {
-   
+    std::cout << "Fetching item with ID: " << id << std::endl;
 
     std::map<std::string, std::string> filter = {
         {"ItemID", std::to_string(id)}};
@@ -59,29 +59,10 @@ MenuItem BreakfastRepository::getItemById(int id)
             std::string cuisineType = res->getString("cuisineType");
             bool sweetToothType = res->getBoolean("sweetToothType");
 
-            
+            // Clean up the result set
             delete res;
 
-      
-            MealType mealType;
-            if (mealTypeStr == "Breakfast")
-            {
-                mealType = MealType::Breakfast;
-            }
-            else if (mealTypeStr == "Lunch")
-            {
-                mealType = MealType::Lunch;
-            }
-            else if (mealTypeStr == "Dinner")
-            {
-                mealType = MealType::Dinner;
-            }
-            else
-            {
-                mealType = MealType::Unknown;
-            }
-
-            MenuItem item(id, name, price, mealType, availability, dietaryType, spiceType, cuisineType, sweetToothType);
+            MenuItem item(id, name, price, MealType::Dinner, availability, dietaryType, spiceType, cuisineType, sweetToothType);
             return item;
         }
         else
@@ -99,15 +80,41 @@ MenuItem BreakfastRepository::getItemById(int id)
         std::cerr << "Exception: " << e.what() << std::endl;
     }
 
+    // Return a default MenuItem or throw an exception as appropriate
     throw std::runtime_error("Failed to retrieve MenuItem from database");
 }
 
-std::vector<MenuItem> BreakfastRepository::getMenuItems() const
+std::vector<MenuItem> DinnerRepository::getMenuItems() const
 {
-    
+  
 
     std::map<std::string, std::string> filter = {
-        {"MealType", "Breakfast"}};
+        {"MealType", "Dinner"}};
+    sql::ResultSet *res = database.selectAll("MenuItem", filter);
+    std::vector<MenuItem> items;
+
+    while (res->next())
+    {
+        const int itemId = res->getInt("ItemID");
+        const std::string name = res->getString("Name");      
+        double price = res->getDouble("Price");               
+        std::string mealTypeStr = res->getString("MealType"); 
+        bool availability = res->getBoolean("AvailabilityStatus");
+        std::string dietaryType = res->getString("dietaryType");
+        std::string spiceType = res->getString("spiceType");
+        std::string cuisineType = res->getString("cuisineType");
+        bool sweetToothType = res->getBoolean("sweetToothType");
+        MenuItem item(itemId, name, price, MealType::Dinner, availability, dietaryType, spiceType, cuisineType, sweetToothType);
+        items.push_back(item);
+    }
+    delete res;
+    return items;
+}
+std::vector<MenuItem> DinnerRepository::getDiscardedItems()
+{
+    std::map<std::string, std::string> filter = {
+        {"MealType", "Dinner"}, {"isDiscarded", "1"}};
+
     sql::ResultSet *res = database.selectAll("MenuItem", filter);
     std::vector<MenuItem> items;
 
@@ -116,39 +123,13 @@ std::vector<MenuItem> BreakfastRepository::getMenuItems() const
         const int itemId = res->getInt("ItemID");
         const std::string name = res->getString("Name");     
         double price = res->getDouble("Price");               
-        std::string mealTypeStr = res->getString("MealType");
-        bool availability = res->getBoolean("AvailabilityStatus");
-        std::string dietaryType = res->getString("dietaryType");
-        std::string spiceType = res->getString("spiceType");
-        std::string cuisineType = res->getString("cuisineType");
-        bool sweetToothType = res->getBoolean("sweetToothType");
-        MenuItem item(itemId, name, price, MealType::Breakfast, availability, dietaryType, spiceType, cuisineType, sweetToothType);
-        items.push_back(item);
-    }
-    delete res;
-    
-    return items;
-}
-std::vector<MenuItem> BreakfastRepository::getDiscardedItems()
-{
-    std::map<std::string, std::string> filter = {
-        {"MealType", "Breakfast"}, {"isDiscarded", "1"}};
-
-    sql::ResultSet *res = database.selectAll("MenuItem", filter);
-    std::vector<MenuItem> items;
-
-    while (res->next())
-    {
-        const int itemId = res->getInt("ItemID");
-        const std::string name = res->getString("Name");    
-        double price = res->getDouble("Price");               
         std::string mealTypeStr = res->getString("MealType"); 
         bool availability = res->getBoolean("AvailabilityStatus");
         std::string dietaryType = res->getString("dietaryType");
         std::string spiceType = res->getString("spiceType");
         std::string cuisineType = res->getString("cuisineType");
         bool sweetToothType = res->getBoolean("sweetToothType");
-        MenuItem item(itemId, name, price, MealType::Breakfast, availability, dietaryType, spiceType, cuisineType, sweetToothType);
+        MenuItem item(itemId, name, price, MealType::Dinner, availability, dietaryType, spiceType, cuisineType, sweetToothType);
         items.push_back(item);
     }
     delete res;
