@@ -15,6 +15,7 @@
 #include "NotificationService.h"
 #include "RecommendationService.h"
 #include "WordLoader.h"
+#include"LogService.h"
 #define BUFFER_SIZE 1024
 class Server
 {

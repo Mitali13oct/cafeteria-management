@@ -64,6 +64,10 @@ std::string Server::handleChef(User *user, int socket, char *buffer)
     Chef *chef = dynamic_cast<Chef *>(user);
     int option = readOptionFromClient(socket, buffer);
     std::string result;
+    if (option == 5)
+    {
+        closeSocket(socket);
+    }
     if (option == 1)
     {
         std::string mealTypeStr;
@@ -211,7 +215,13 @@ std::string Server::handleAdmin(User *user, int socket, char *buffer)
     Admin *admin = dynamic_cast<Admin *>(user);
     int option = readOptionFromClient(socket, buffer);
     std::string result;
-    if (option == 1)
+    if (option == 6)
+    {
+        closeSocket(socket);
+        LogService logService;
+        logService.addLogInfo(user->getId(), "Logged out");
+    }
+    else if (option == 1)
     {
         std::map<std::string, std::string> itemDetails;
         readMultipleFromSocket(socket, buffer, itemDetails);
@@ -252,6 +262,8 @@ std::string Server::handleAdmin(User *user, int socket, char *buffer)
         admin->setService(service);
         admin->addMenuItem(item);
         result = "Item added successfully.";
+        LogService logService;
+        logService.addLogInfo(user->getId(), "Added " + Utility::mealTypeToString(mealType) + " Item");
     }
     else if (option == 2)
     {
@@ -267,6 +279,9 @@ std::string Server::handleAdmin(User *user, int socket, char *buffer)
         admin->updateMenuItem(id1, column, value);
 
         result = "Item updated successfully.";
+
+        LogService logService;
+        logService.addLogInfo(user->getId(), "Updated Item");
     }
     else if (option == 3)
     {
@@ -278,10 +293,14 @@ std::string Server::handleAdmin(User *user, int socket, char *buffer)
         int id1 = std::stoi(id);
         admin->deleteItem(id1);
         result = "Deleted Menu Item";
+        LogService logService;
+        logService.addLogInfo(user->getId(), "Deleted Item");
     }
     else if (option == 4)
     {
         processViewItemsOption(admin, socket, buffer);
+        LogService logService;
+        logService.addLogInfo(user->getId(), "Viewed all Items");
     }
     else if (option == 5)
     {
@@ -301,9 +320,6 @@ std::string Server::handleAdmin(User *user, int socket, char *buffer)
         {
             service = (new DinnerRepository());
         }
-        else
-        {
-        }
 
         admin->setService(service);
         sendPrompt(socket, admin->getDiscardedItems());
@@ -317,6 +333,8 @@ std::string Server::handleAdmin(User *user, int socket, char *buffer)
             int itemToDelete = std::stoi(id);
             admin->deleteItem(itemToDelete);
             sendPrompt(socket, "Item Deleted");
+            LogService logService;
+            logService.addLogInfo(user->getId(), "Discarded Item");
         }
         else if (std::stoi(deleteOption) == 2)
         {
@@ -325,6 +343,8 @@ std::string Server::handleAdmin(User *user, int socket, char *buffer)
             int itemToAddQuestion = std::stoi(id);
             admin->addQuestion(itemToAddQuestion);
             sendPrompt(socket, "Question added for detailed feedback");
+            LogService logService;
+            logService.addLogInfo(user->getId(), "Requested Detailed Feedback for Item");
         }
     }
     else
@@ -338,7 +358,11 @@ std::string Server::handleEmployee(User *user, int socket, char *buffer)
     Employee *emp = dynamic_cast<Employee *>(user);
     int option = readOptionFromClient(socket, buffer);
     std::string result;
-    if (option == 1)
+    if (option == 5)
+    {
+        closeSocket(socket);
+    }
+    else if (option == 1)
     {
 
         std::string mealTypeStr;
@@ -391,10 +415,10 @@ std::string Server::handleEmployee(User *user, int socket, char *buffer)
         readFromSocket(socket, buffer, notificationTypeStr);
         NotificationService nservice = new NotificationRepository();
         NotificationType type;
-        
+
         if (notificationTypeStr == "Recommendation")
         {
-            
+
             type = NotificationType::Recommendation;
         }
         else if (notificationTypeStr == "ItemAdded")
@@ -506,6 +530,8 @@ void *Server::handleClient(void *socket_desc)
     User *user = userRepo.getUserByUsername(username);
     std::string userRole = userRepo.getUserRole(username);
     server->sendPrompt(new_socket, userRole);
+    LogService logService;
+    logService.addLogInfo(user->getId(), "Logged in");
     std::string result;
     while (true)
     {
@@ -591,6 +617,7 @@ std::string Server::getNotification(int socket, char *buffer)
 void Server::closeSocket(int socket)
 {
     close(socket);
+    std::cout << "Connection disconnected" << std::endl;
 }
 
 void Server::start()

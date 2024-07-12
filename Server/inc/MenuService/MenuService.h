@@ -10,7 +10,7 @@ class MenuService
 {
     MenuRepository *menuType;
 public:
-    MenuService(MenuRepository *mealType) : menuType(mealType) {std::cout<<"MenuService\n";}
+    MenuService(MenuRepository *mealType) : menuType(mealType) {}
     MenuService() = default;
     bool addMenuItem(const MenuItem &item);
     bool updateMenuItem(int ,std::string,std::string);

@@ -94,13 +94,14 @@ bool handleAdminOptions(Client &client)
 
     std::cout << "Enter option: ";
     std::cin >> optionstr;
-    if (optionstr == "0")
+    if (optionstr == "6")
     {
+        client.sendOption(optionstr);
         return true;
     }
     client.sendOption(optionstr);
     int option = std::stoi(optionstr);
-    if (option >= 1 && option <= 5)
+    if (option >= 1 && option <= 6)
     {
 
         if (option == 1)
@@ -224,8 +225,9 @@ bool handleChefOptions(Client &client)
     std::cout << Utility::showMenu("Chef");
     std::cout << "Enter option: ";
     std::cin >> optionstr;
-    if (optionstr == "0")
+     if (optionstr == "5")
     {
+        client.sendOption(optionstr);
         return true;
     }
     client.sendOption(optionstr);
@@ -309,8 +311,9 @@ bool handleEmployeeOptions(Client &client)
     std::cout << Utility::showMenu("Employee");
     std::cout << "Enter option: ";
     std::cin >> optionstr;
-    if (optionstr == "0")
+     if (optionstr == "5")
     {
+        client.sendOption(optionstr);
         return true;
     }
     client.sendOption(optionstr);
