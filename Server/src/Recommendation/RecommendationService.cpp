@@ -162,10 +162,14 @@ std::string RecommendationService::getRolledOutItemsForToday()
 
 std::string RecommendationService::getSortedRecommendationsByPreference(int userId, MenuRepository *menuRepository)
 {
-   
+
     Preference empPreference = preferenceService.loadPreference(userId);
-    
+
     std::vector<Recommendation> rolledOutRecommendations = recommendationRepository->getRolledOutRecommendations();
+    if (rolledOutRecommendations.size() == 0)
+    {
+        return "Recommendation not rolled out for today";
+    }
     std::vector<MenuItem> menuItems = menuRepository->getMenuItems();
     std::unordered_map<int, MenuItem> menuItemMap;
     for (const auto &recommendation : rolledOutRecommendations)
@@ -187,15 +191,12 @@ std::string RecommendationService::getSortedRecommendationsByPreference(int user
                           return true;
                   }
 
-                 
                   if (empPreference.getSpiceLevel() != itemA.getSpiceType() && empPreference.getSpiceLevel() == itemB.getSpiceType())
                       return false;
 
-                 
                   if (empPreference.getCuisinePreference() != itemA.getCuisineType() && empPreference.getCuisinePreference() == itemB.getCuisineType())
                       return false;
 
-                  
                   if (empPreference.hasSweetTooth() && !itemA.getSweetToothType() && itemB.getSweetToothType())
                       return false;
 
@@ -207,7 +208,6 @@ std::string RecommendationService::getSortedRecommendationsByPreference(int user
     {
         MenuItem item = menuItemMap[recommendation.getItemid()];
         result << " ID: " << recommendation.getRecommendationId() << ", Name: " << item.getName() << "\n";
-       
     }
 
     return result.str();

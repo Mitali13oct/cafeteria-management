@@ -389,7 +389,13 @@ std::string Server::handleEmployee(User *user, int socket, char *buffer)
             service = (new DinnerRepository());
         }
         emp->setService(service);
-        sendPrompt(socket, emp->getRolledOutItems(menuRepository));
+        std::string recommendationResponse = emp->getRolledOutItems(menuRepository);
+
+        if (recommendationResponse == "Recommendation not rolled out for today")
+        {
+            return "Recommendation not rolled out for today\n";
+        }
+        sendPrompt(socket, recommendationResponse);
 
         std::string selectedIDs;
         if (!readFromSocket(socket, buffer, selectedIDs))
@@ -608,12 +614,8 @@ std::string Server::processViewItemsOption(Admin *admin, int socket, char *buffe
     }
     admin->setService(service);
     sendPrompt(socket, admin->getAllMenuItem());
+}
 
-    return admin->getAllMenuItem();
-}
-std::string Server::getNotification(int socket, char *buffer)
-{
-}
 void Server::closeSocket(int socket)
 {
     close(socket);

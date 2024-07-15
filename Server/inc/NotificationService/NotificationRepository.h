@@ -1,6 +1,7 @@
 #pragma once
 #include "Notification.h"
 #include "DbOperation.h"
+#include "Utility.h"
 class NotificationRepository
 {
 private:

@@ -19,7 +19,7 @@ void NotificationRepository::deleteNotification(int notificationId)
 std::vector<Notification> NotificationRepository::getAllNotification(std::string type) const
 {
     std::map<std::string, std::string> filter = {
-        {"notificationType",type }};
+        {"notificationType",type },{"notificationDate",Utility::getCurrentDate()}};
     sql::ResultSet *res = database.selectAll("Notification", filter);
     std::vector<Notification> notifications;
 

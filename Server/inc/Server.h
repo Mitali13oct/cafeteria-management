@@ -48,6 +48,5 @@ public:
      std::string handleEmployee(User *user, int socket, char *buffer);
     std::string processViewItemsOption(Admin *admin, int socket, char *buffer);
     void *handleAuthFailure(int socket);
-    std::string getNotification(int socket, char *buffer);
     void closeSocket(int new_socket);
 };
