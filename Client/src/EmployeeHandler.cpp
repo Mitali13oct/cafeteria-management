@@ -22,7 +22,6 @@ bool EmployeeHandler::handleOptions(Client &client)
         std::cin >> mealType;
         client.sendOption(mealType);
         client.readResponse(buffer);
-        std::cout<<buffer + '1';
         std::string serverResponse(buffer);
         if (serverResponse == "Recommendation not rolled out for today")
         {

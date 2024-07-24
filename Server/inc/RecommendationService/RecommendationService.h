@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <BreakfastRepository.h>
 #include "PreferenceService.h"
-#include "Utility.h"
+#include "ServerUtility.h"
 class RecommendationService
 {
 private:

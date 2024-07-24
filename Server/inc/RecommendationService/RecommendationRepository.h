@@ -1,7 +1,7 @@
 #pragma once
 #include "Recommendation.h"
 #include "DbOperation.h"
-#include "Utility.h"
+#include "ServerUtility.h"
 #include <vector>
 
 class RecommendationRepository

@@ -204,9 +204,6 @@ std::string Server::handleChef(User *user, int socket, char *buffer)
             sendPrompt(socket, "Question added for detailed feedback");
         }
     }
-    {
-        result = "Invalid Option";
-    }
     return result;
 }
 
